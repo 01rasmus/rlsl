@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "error.h"
+#include "rlsl_error.h"
 
 #define PRINTF_COL_RESET            "\x1B[0m"
 #define PRINTF_COL_BOLD             "\x1B[1m"
@@ -12,22 +12,22 @@
 #define PRINTF_COL_CYAN             "\x1B[36m"
 #define PRINTF_COL_WHITE            "\x1B[37m"
 
-rlr_sl_error_t rlr_sl_error_create(uint64_t error_code, const rlr_sl_cursor_t* start, const rlr_sl_cursor_t* end) {
+rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end) {
     uint8_t severity = 0;
     const char* message = NULL;
 
     switch(error_code) {
         #define X(NAME, CODE, MESSAGE, SEVERITY) case CODE: { message = MESSAGE; severity = SEVERITY; break; }
-        RLR_SL_ERRORS(X)
+        RLSL_ERRORS(X)
         #undef X
         default: {
-            severity = RLR_SL_SEVERITY_ERROR;
+            severity = RLSL_SEVERITY_ERROR;
             message = "unknown error";
             break;
         }
     }
 
-    return (rlr_sl_error_t) {
+    return (rlsl_error_t) {
         .severity = severity,
         .message = message,
         .code = error_code,
@@ -36,7 +36,7 @@ rlr_sl_error_t rlr_sl_error_create(uint64_t error_code, const rlr_sl_cursor_t* s
     };
 }
 
-void rlr_sl_error_print(rlr_sl_error_t* error, const char* identifier, const char* source) {
+void rlsl_error_print(rlsl_error_t* error, const char* identifier, const char* source) {
     printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05llx)\n", identifier, error->start.line, error->start.column, error->message, error->code);
     printf(PRINTF_COL_RESET "\t");
 
