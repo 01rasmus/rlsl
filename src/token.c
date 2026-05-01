@@ -1,0 +1,369 @@
+#include <stdint.h>
+#include <string.h>
+#include <errno.h>
+#include <ctype.h>
+#include <stb_ds.h>
+#include "token.h"
+#include "str.h"
+
+_Static_assert(sizeof(unsigned long long) == 8, "Expected 64-bit unsigned long long");
+
+typedef struct rlr_sl_token_str_to_type_t {
+    const char* string;
+    rlr_sl_token_type_t type;
+} rlr_sl_token_str_to_type_t;
+
+/*
+    this array contains strings that matches
+    the actual strings that is equialent
+    to a static token. Like "struct" or "*".
+
+    these are sorted by length and then
+    by alphabetical order, starting with
+    the longest
+*/
+static rlr_sl_token_str_to_type_t rlr_sl_token_static_matches[] = {
+    { .string = "double", .type = RLR_SL_TOKEN_TYPE_DOUBLE },
+    { .string = "mat2x2", .type = RLR_SL_TOKEN_TYPE_MAT2X2 },
+    { .string = "mat2x3", .type = RLR_SL_TOKEN_TYPE_MAT2X3 },
+    { .string = "mat2x4", .type = RLR_SL_TOKEN_TYPE_MAT2X4 },
+    { .string = "mat3x2", .type = RLR_SL_TOKEN_TYPE_MAT3X2 },
+    { .string = "mat3x3", .type = RLR_SL_TOKEN_TYPE_MAT3X3 },
+    { .string = "mat3x4", .type = RLR_SL_TOKEN_TYPE_MAT3X4 },
+    { .string = "mat4x2", .type = RLR_SL_TOKEN_TYPE_MAT4X2 },
+    { .string = "mat4x3", .type = RLR_SL_TOKEN_TYPE_MAT4X3 },
+    { .string = "mat4x4", .type = RLR_SL_TOKEN_TYPE_MAT4X4 },
+    { .string = "return", .type = RLR_SL_TOKEN_KEYWORD_RETURN },
+    { .string = "struct", .type = RLR_SL_TOKEN_KEYWORD_STRUCT },
+    { .string = "bvec2", .type = RLR_SL_TOKEN_TYPE_BVEC2 },
+    { .string = "bvec3", .type = RLR_SL_TOKEN_TYPE_BVEC3 },
+    { .string = "bvec4", .type = RLR_SL_TOKEN_TYPE_BVEC4 },
+    { .string = "const", .type = RLR_SL_TOKEN_KEYWORD_CONST },
+    { .string = "dvec2", .type = RLR_SL_TOKEN_TYPE_DVEC2 },
+    { .string = "dvec3", .type = RLR_SL_TOKEN_TYPE_DVEC3 },
+    { .string = "dvec4", .type = RLR_SL_TOKEN_TYPE_DVEC4 },
+    { .string = "false", .type = RLR_SL_TOKEN_LITERAL_FALSE },
+    { .string = "float", .type = RLR_SL_TOKEN_TYPE_FLOAT },
+    { .string = "float", .type = RLR_SL_TOKEN_TYPE_FLOAT },
+    { .string = "ivec2", .type = RLR_SL_TOKEN_TYPE_IVEC2 },
+    { .string = "ivec3", .type = RLR_SL_TOKEN_TYPE_IVEC3 },
+    { .string = "ivec4", .type = RLR_SL_TOKEN_TYPE_IVEC4 },
+    { .string = "uvec2", .type = RLR_SL_TOKEN_TYPE_UVEC2 },
+    { .string = "uvec3", .type = RLR_SL_TOKEN_TYPE_UVEC3 },
+    { .string = "uvec4", .type = RLR_SL_TOKEN_TYPE_UVEC4 },
+    { .string = "while", .type = RLR_SL_TOKEN_KEYWORD_WHILE },
+    { .string = "bool", .type = RLR_SL_TOKEN_TYPE_BOOL },
+    { .string = "bool", .type = RLR_SL_TOKEN_TYPE_BOOL },
+    { .string = "else", .type = RLR_SL_TOKEN_KEYWORD_ELSE },
+    { .string = "mat2", .type = RLR_SL_TOKEN_TYPE_MAT2 },
+    { .string = "mat3", .type = RLR_SL_TOKEN_TYPE_MAT3 },
+    { .string = "mat4", .type = RLR_SL_TOKEN_TYPE_MAT4 },
+    { .string = "true", .type = RLR_SL_TOKEN_LITERAL_TRUE },
+    { .string = "uint", .type = RLR_SL_TOKEN_TYPE_UINT },
+    { .string = "vec2", .type = RLR_SL_TOKEN_TYPE_VEC2 },
+    { .string = "vec3", .type = RLR_SL_TOKEN_TYPE_VEC3 },
+    { .string = "vec4", .type = RLR_SL_TOKEN_TYPE_VEC4 },
+    { .string = "for", .type = RLR_SL_TOKEN_KEYWORD_FOR },
+    { .string = "int", .type = RLR_SL_TOKEN_TYPE_INT },
+    { .string = "if", .type = RLR_SL_TOKEN_KEYWORD_IF },
+
+    //single character tokens
+    { .string = "-", .type = RLR_SL_TOKEN_SYMBOL_DASH },
+    { .string = ",", .type = RLR_SL_TOKEN_SYMBOL_COMMA },
+    { .string = ";", .type = RLR_SL_TOKEN_SYMBOL_SEMICOLON },
+    { .string = ":", .type = RLR_SL_TOKEN_SYMBOL_COLON },
+    { .string = "!", .type = RLR_SL_TOKEN_SYMBOL_EXCLAMATION },
+    { .string = "(", .type = RLR_SL_TOKEN_SYMBOL_PARENTHESIS_OPENED },
+    { .string = ")", .type = RLR_SL_TOKEN_SYMBOL_PARENTHESIS_CLOSED },
+    { .string = "[", .type = RLR_SL_TOKEN_SYMBOL_BRACKET_OPENED },
+    { .string = "]", .type = RLR_SL_TOKEN_SYMBOL_BRACKET_CLOSED },
+    { .string = "{", .type = RLR_SL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED },
+    { .string = "}", .type = RLR_SL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED },
+    { .string = "*", .type = RLR_SL_TOKEN_SYMBOL_STAR },
+    { .string = "/", .type = RLR_SL_TOKEN_SYMBOL_FORWARD_SLASH },
+    { .string = "&", .type = RLR_SL_TOKEN_SYMBOL_AND },
+    { .string = "%", .type = RLR_SL_TOKEN_SYMBOL_PERCENT },
+    { .string = "+", .type = RLR_SL_TOKEN_SYMBOL_PLUS },
+    { .string = "<", .type = RLR_SL_TOKEN_SYMBOL_ARROW_LEFT },
+    { .string = "=", .type = RLR_SL_TOKEN_SYMBOL_EQUAL },
+    { .string = ">", .type = RLR_SL_TOKEN_SYMBOL_ARROW_RIGHT },
+    { .string = "|", .type = RLR_SL_TOKEN_SYMBOL_PIPE },
+    { .string = "~", .type = RLR_SL_TOKEN_SYMBOL_TILDE },
+};
+
+static const char* hex_substrings[] = { "A", "B", "C", "D", "E", "F", "a", "b", "c", "d", "e", "f" };
+static const char* dec_substrings[] = { "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char* bin_substrings[] = { "0", "1" };
+
+void rlr_sl_token_free(rlr_sl_token_t* token) {
+    switch(token->type) {
+        default:
+            break;
+    }
+}
+
+/*
+    list of tokenizer functions.
+    the order of these functions are important
+    and should not be changed
+*/
+static rlr_sl_tokenizer_function_t tokenizer_functions[] = {
+    _rlr_sl_token_tokenizer_parse_space,
+    _rlr_sl_token_tokenizer_parse_static_tokens,
+    _rlr_sl_token_tokenizer_parse_literal,
+};
+
+rlr_sl_tokenizer_result_t rlr_sl_token_tokenize_string(const char* source, const char* compile_unit_identifier) {
+    rlr_sl_tokenizer_result_t res = (rlr_sl_tokenizer_result_t){
+        .error_count = 0,
+        .token_count = 0,
+        .errors = NULL,
+        .tokens = NULL,
+    };
+
+    rlr_sl_cursor_t cursor = rlr_sl_cursor_create();
+    size_t source_length = strlen(source);
+    while(1) {
+        bool added_token = false;
+        for(int32_t i = 0; i < sizeof(tokenizer_functions) / sizeof(rlr_sl_tokenizer_function_t); i++) {
+            rlr_sl_tokenizer_function_t tokenizer = tokenizer_functions[i];
+            if(tokenizer(&cursor, &res, source, compile_unit_identifier)) {
+                added_token = true;
+                break;
+            }
+        }
+
+        //we arrived at a character that is illegal.
+        //we will add it as an error, and continue
+        //to check if there are more errors further down
+        if(!added_token) {
+
+        }
+
+        if(source_length <= cursor.index) {
+            break;
+        }
+    }
+    return res;
+err:
+    arrfree(res.errors);
+    arrfree(res.tokens);
+    res.errors = NULL;
+    res.tokens = NULL;
+    return res;
+}
+
+bool _rlr_sl_token_tokenizer_parse_space(rlr_sl_cursor_t* cursor, rlr_sl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+    rlr_sl_cursor_t cursor_current = *cursor;
+    rlr_sl_cursor_t cursor_start = cursor_current;
+    bool is_space = false;
+    while(1) {
+        const char character = source[cursor_current.index];
+        bool current_is_space = isspace(character);
+        if(current_is_space) {
+            is_space = true;
+        } else {
+            break;
+        }
+        if(rlr_sl_cursor_advance(&cursor_current, source, 1) != 1) {
+            break;
+        }
+    }
+    if(is_space) {
+        rlr_sl_token_t token = (rlr_sl_token_t){
+            .type = RLR_SL_TOKEN_SYMBOL_SPACE,
+            .cursor_start = cursor_start,
+            .cursor_end = cursor_current,
+        };
+        (*cursor) = cursor_current;
+        arrpush(res->tokens, token);
+    }
+    return is_space;
+}
+
+bool _rlr_sl_token_tokenizer_parse_static_tokens(rlr_sl_cursor_t* cursor, rlr_sl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+    rlr_sl_cursor_t cursor_current = *cursor;
+
+    bool found_token = false;
+    for(int32_t i = 0; i < sizeof(rlr_sl_token_static_matches) / sizeof(rlr_sl_token_str_to_type_t); i++) {
+        rlr_sl_token_str_to_type_t* stt = &rlr_sl_token_static_matches[i];
+        size_t token_string_length = strlen(stt->string);
+
+        if(strcmp(stt->string, source + cursor_current.index) == 0) {
+            if(rlr_sl_cursor_advance(&cursor_current, source, token_string_length) != token_string_length) {
+                break;
+            }
+            rlr_sl_token_t token = (rlr_sl_token_t){
+                .type = stt->type,
+                .cursor_start = *cursor,
+                .cursor_end = cursor_current,
+            };
+            found_token = true;
+            arrpush(res->tokens, token);
+            (*cursor) = cursor_current;
+            break;
+        }
+    }
+    return found_token;
+}
+
+#include <stdio.h>
+
+bool _rlr_sl_token_tokenizer_parse_literal(rlr_sl_cursor_t* cursor, rlr_sl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+    rlr_sl_cursor_t cursor_current = (*cursor);
+
+    const size_t result_size = 2048;
+    const char result[result_size] = { 0 };
+    const char* integer_prefixes[] = { "0x", "0b" };
+    const uint64_t integer_prefix_flags[] = { TOKEN_LITERAL_FLAG_HEX, TOKEN_LITERAL_FLAG_BINARY };
+
+    uint64_t contains_flags = 0;
+    uint64_t starts_with = 0;
+    uint32_t comma_count = 0;
+    bool has_invalid_letter = false;
+    bool has_letter = false;
+
+    //check if it starts with one of the integer suffixes
+    int32_t suffix_index = str_starts_with_any(source + cursor_current.index, integer_prefixes);
+    if(suffix_index != -1) {
+        const char* str = integer_prefixes[suffix_index];
+        uint64_t flag = integer_prefix_flags[suffix_index];
+        strcat(result, str);
+        starts_with |= flag;
+        rlr_sl_cursor_advance(&cursor_current, source, strlen(str));
+    } else if(isnumber(source[cursor_current.index])) {
+        starts_with |= TOKEN_LITERAL_FLAG_DECIMAL;
+    } else if(isalpha(source[cursor_current.index])) {
+        starts_with |= TOKEN_LITERAL_FLAG_LETTER;
+    }
+
+    //check characters
+    const char* str = NULL;
+    char temp[2] = { 0 };
+    while(true) {
+        if(str) {
+            strcat(result, str);
+            rlr_sl_cursor_advance(&cursor_current, source, strlen(str));
+            str = NULL;
+        }
+
+        const char current_char = source[cursor_current.index];
+        if(isspace(current_char) || current_char == '\0') {
+            break;
+        }
+
+        int32_t hex_index = str_starts_with_any(source + cursor_current.index, hex_substrings);
+        if(hex_index != -1) {
+            str = hex_substrings[hex_index];
+            contains_flags |= TOKEN_LITERAL_FLAG_HEX;
+            continue;
+        }
+
+        int32_t dec_index = str_starts_with_any(source + cursor_current.index, dec_substrings);
+        if(dec_index != -1) {
+            str = dec_substrings[dec_index];
+            contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
+            continue;
+        }
+
+        int32_t bin_index = str_starts_with_any(source + cursor_current.index, bin_substrings);
+        if(bin_index != -1) {
+            str = bin_substrings[bin_index];
+            contains_flags |= TOKEN_LITERAL_FLAG_BINARY;
+            continue;
+        }
+        
+        if(isalpha(current_char)) {
+            temp[0] = current_char;
+            str = temp;
+            contains_flags |= TOKEN_LITERAL_FLAG_LETTER;
+            continue;
+        }
+
+        if(current_char == '.') {
+            temp[0] = '.';
+            str = temp;
+            comma_count++;
+            contains_flags |= TOKEN_LITERAL_FLAG_COMMA;
+            continue;
+        }
+
+        if(!str) {
+            temp[0] = current_char;
+            str = temp;
+            contains_flags |= TOKEN_LITERAL_FLAG_INVALID;
+            continue;
+        }
+    }
+
+    if(contains_flags & TOKEN_LITERAL_FLAG_INVALID) {
+        rlr_sl_error_t error = rlr_sl_error_create(RLR_SL_ERROR_INVALID_CHARACTER_IN_LIT_OR_IDENT, cursor, &cursor_current);
+        rlr_sl_error_print(&error, compile_unit_identifier, source);
+        goto done;
+    }
+
+    if(contains_flags & TOKEN_LITERAL_FLAG_COMMA) {
+        if(comma_count > 1) {
+            rlr_sl_error_t error = rlr_sl_error_create(RLR_SL_ERROR_FLOAT_TOO_MANY_COMMAS, cursor, &cursor_current);
+            rlr_sl_error_print(&error, compile_unit_identifier, source);
+            goto done;
+        }
+
+        uint64_t starts_with_hex = (starts_with & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
+        uint64_t starts_with_dec = (starts_with & TOKEN_LITERAL_FLAG_DECIMAL) == TOKEN_LITERAL_FLAG_DECIMAL;
+        uint64_t starts_with_bin = (starts_with & TOKEN_LITERAL_FLAG_BINARY) == TOKEN_LITERAL_FLAG_BINARY;
+        uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
+        uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
+        printf("%d %d\n", starts_with_let, !starts_with_dec);
+        if((starts_with_bin || starts_with_hex || starts_with_let || starts_with == 0 || contains_hex)) {
+            rlr_sl_error_t error = rlr_sl_error_create(RLR_SL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current);
+            rlr_sl_error_print(&error, compile_unit_identifier, source);
+            goto done;
+        }
+
+        errno = 0;
+        long double value = strtold(result, NULL);
+        bool overflow = errno == ERANGE;
+        printf("%f %d %d\n", value, overflow, !starts_with_dec);
+        goto done;
+    }
+
+    const int32_t bases[] = { 2, 10, 16 };
+    const uint64_t base_error_codes[] = {
+        RLR_SL_ERROR_INVALID_BINARY_NUMBER,
+        RLR_SL_ERROR_INVALID_DECIMAL_NUMBER,
+        RLR_SL_ERROR_INVALID_HEXADECIMAL_NUMBER
+    };
+
+    int32_t base_index = -1;
+    bool valid_number = false;
+    if(starts_with == TOKEN_LITERAL_FLAG_HEX) {
+        valid_number = (contains_flags == TOKEN_LITERAL_FLAG_HEX) || (contains_flags == TOKEN_LITERAL_FLAG_DECIMAL) || (contains_flags == TOKEN_LITERAL_FLAG_BINARY);
+        base_index = 2;
+    } else if(starts_with == TOKEN_LITERAL_FLAG_DECIMAL) {
+        valid_number = (contains_flags == TOKEN_LITERAL_FLAG_DECIMAL) || (contains_flags == TOKEN_LITERAL_FLAG_BINARY);
+        base_index = 1;
+    } else if(starts_with == TOKEN_LITERAL_FLAG_BINARY) {
+        valid_number = contains_flags == TOKEN_LITERAL_FLAG_BINARY;
+        base_index = 0;
+    }
+
+    if(base_index != -1) {
+        if(!valid_number) {
+            rlr_sl_error_t error = rlr_sl_error_create(base_error_codes[base_index], cursor, &cursor_current);
+            rlr_sl_error_print(&error, compile_unit_identifier, source);
+            goto done;
+        }
+
+        //fine value!
+        int32_t base = bases[base_index];
+        errno = 0;
+        uint64_t value = strtoull(base == 10 ? result : (result + 2), NULL, base);
+        bool overflow = errno == ERANGE;
+
+        printf("res: %s %d %llu %d %d\n", result, base, value, contains_flags, overflow);
+    }
+done:
+    (*cursor) = cursor_current;
+    return true;
+}
