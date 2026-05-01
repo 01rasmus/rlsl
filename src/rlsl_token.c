@@ -45,7 +45,6 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = "dvec4", .type = RLSL_TOKEN_TYPE_DVEC4 },
     { .string = "false", .type = RLSL_TOKEN_LITERAL_FALSE },
     { .string = "float", .type = RLSL_TOKEN_TYPE_FLOAT },
-    { .string = "float", .type = RLSL_TOKEN_TYPE_FLOAT },
     { .string = "ivec2", .type = RLSL_TOKEN_TYPE_IVEC2 },
     { .string = "ivec3", .type = RLSL_TOKEN_TYPE_IVEC3 },
     { .string = "ivec4", .type = RLSL_TOKEN_TYPE_IVEC4 },
@@ -53,7 +52,6 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = "uvec3", .type = RLSL_TOKEN_TYPE_UVEC3 },
     { .string = "uvec4", .type = RLSL_TOKEN_TYPE_UVEC4 },
     { .string = "while", .type = RLSL_TOKEN_KEYWORD_WHILE },
-    { .string = "bool", .type = RLSL_TOKEN_TYPE_BOOL },
     { .string = "bool", .type = RLSL_TOKEN_TYPE_BOOL },
     { .string = "else", .type = RLSL_TOKEN_KEYWORD_ELSE },
     { .string = "mat2", .type = RLSL_TOKEN_TYPE_MAT2 },
@@ -365,7 +363,20 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         uint64_t value = strtoull(base == 10 ? result : (result + 2), NULL, base);
         bool overflow = errno == ERANGE;
 
-        printf("res: %s %d %llu %llu %d\n", result, base, value, contains_flags, overflow);
+        rlsl_token_t token = (rlsl_token_t){
+            .type = RLSL_TOKEN_LITERAL_INT,
+            .value = {
+                .integer = {
+                    .value = value,
+                    .overflow = overflow,
+                }
+            },
+            .cursor_start = (*cursor),
+            .cursor_end = cursor_current
+        };
+        rlsl_vec_push(res->tokens, token);
+
+        //printf("res: %s %d %llu %llu %d\n", result, base, value, contains_flags, overflow);
     }
 done:
     (*cursor) = cursor_current;

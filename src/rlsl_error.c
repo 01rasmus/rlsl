@@ -1,16 +1,6 @@
 #include <stdio.h>
+#include "rlsl_tools/rlsl_str.h"
 #include "rlsl_error.h"
-
-#define PRINTF_COL_RESET            "\x1B[0m"
-#define PRINTF_COL_BOLD             "\x1B[1m"
-#define PRINTF_COL_BLACK            "\x1B[30m"
-#define PRINTF_COL_RED              "\x1B[31m"
-#define PRINTF_COL_GREEN            "\x1B[32m"
-#define PRINTF_COL_YELLOW           "\x1B[33m"
-#define PRINTF_COL_BLUE             "\x1B[34m"
-#define PRINTF_COL_MAGENTA          "\x1B[35m"
-#define PRINTF_COL_CYAN             "\x1B[36m"
-#define PRINTF_COL_WHITE            "\x1B[37m"
 
 rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end) {
     uint8_t severity = 0;
