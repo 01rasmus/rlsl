@@ -1,6 +1,3 @@
-/*
-    RL Render Shader Language
-*/
 #pragma once
 #include <stddef.h>
 #include "rlsl_ast.h"

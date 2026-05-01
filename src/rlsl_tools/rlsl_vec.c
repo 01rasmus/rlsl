@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "vec.h"
+#include "rlsl_vec.h"
 
 int64_t rlsl_vec_size(void* vec) {
     if(!vec) {

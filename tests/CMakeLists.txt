@@ -4,9 +4,9 @@ set(CMAKE_C_STANDARD 11)
 
 # directories
 set(OBJ_DIR "${OUT_DIR}/obj")
-set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/.." rlsl)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/.." rlsl)
 
 # source
 file(GLOB_RECURSE RLSL_TEST_SRC "${SRC_DIR}/*.c")

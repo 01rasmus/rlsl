@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
-#include "rlsl_tools/str.h"
-#include "rlsl_tools/vec.h"
+#include "rlsl_tools/rlsl_str.h"
+#include "rlsl_tools/rlsl_vec.h"
 #include "rlsl_token.h"
 
 _Static_assert(sizeof(unsigned long long) == 8, "Expected 64-bit unsigned long long");

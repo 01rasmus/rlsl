@@ -1,5 +1,5 @@
 #include <string.h>
-#include "str.h"
+#include "rlsl_str.h"
 
 int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count) {
     for(int32_t i = 0; i < substring_count; i++) {
