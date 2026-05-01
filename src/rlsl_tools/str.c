@@ -1,7 +1,7 @@
 #include <string.h>
 #include "str.h"
 
-int32_t _str_starts_with_any(const char* src, const char** substrings, int32_t substring_count) {
+int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count) {
     for(int32_t i = 0; i < substring_count; i++) {
         const char* substring = substrings[i];
         size_t length = strlen(substring);
@@ -12,7 +12,7 @@ int32_t _str_starts_with_any(const char* src, const char** substrings, int32_t s
     return -1;
 }
 
-size_t str_cat(char* dest, size_t dest_total_size, const char* src) {
+size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src) {
     size_t dest_length = 0;
     size_t src_length = strlen(src);
 

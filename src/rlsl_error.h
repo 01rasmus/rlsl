@@ -29,4 +29,4 @@ typedef struct rlsl_error_t {
 } rlsl_error_t;
 
 rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end);
-void rlsl_error_print(rlsl_error_t* error, const char* identifier, const char* source);
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier);

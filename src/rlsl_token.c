@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <ctype.h>
-#include <stb_ds.h>
-#include "rlsl_token.h"
 #include "rlsl_tools/str.h"
+#include "rlsl_tools/vec.h"
+#include "rlsl_token.h"
 
 _Static_assert(sizeof(unsigned long long) == 8, "Expected 64-bit unsigned long long");
 
@@ -144,10 +145,13 @@ rlsl_tokenizer_result_t rlsl_token_tokenize_string(const char* source, const cha
             break;
         }
     }
+
+    res.error_count = rlsl_vec_size(res.errors);
+    res.token_count = rlsl_vec_size(res.tokens);
     return res;
 err:
-    arrfree(res.errors);
-    arrfree(res.tokens);
+    rlsl_vec_free(res.errors);
+    rlsl_vec_free(res.tokens);
     res.errors = NULL;
     res.tokens = NULL;
     return res;
@@ -176,7 +180,7 @@ bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_res
             .cursor_end = cursor_current,
         };
         (*cursor) = cursor_current;
-        arrpush(res->tokens, token);
+        rlsl_vec_push(res->tokens, token);
     }
     return is_space;
 }
@@ -199,7 +203,7 @@ bool _rlsl_token_tokenizer_parse_static_tokens(rlsl_cursor_t* cursor, rlsl_token
                 .cursor_end = cursor_current,
             };
             found_token = true;
-            arrpush(res->tokens, token);
+            rlsl_vec_push(res->tokens, token);
             (*cursor) = cursor_current;
             break;
         }
@@ -213,7 +217,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     rlsl_cursor_t cursor_current = (*cursor);
 
     const size_t result_size = 2048;
-    const char result[result_size] = { 0 };
+    char result[result_size] = { 0 };
     const char* integer_prefixes[] = { "0x", "0b" };
     const uint64_t integer_prefix_flags[] = { TOKEN_LITERAL_FLAG_HEX, TOKEN_LITERAL_FLAG_BINARY };
 
@@ -224,11 +228,11 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     bool has_letter = false;
 
     //check if it starts with one of the integer suffixes
-    int32_t suffix_index = str_starts_with_any(source + cursor_current.index, integer_prefixes);
+    int32_t suffix_index = rlsl_str_starts_with_any(source + cursor_current.index, integer_prefixes);
     if(suffix_index != -1) {
         const char* str = integer_prefixes[suffix_index];
         uint64_t flag = integer_prefix_flags[suffix_index];
-        strcat(result, str);
+        rlsl_str_cat(result, result_size, str);
         starts_with |= flag;
         rlsl_cursor_advance(&cursor_current, source, strlen(str));
     } else if(isnumber(source[cursor_current.index])) {
@@ -242,7 +246,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     char temp[2] = { 0 };
     while(true) {
         if(str) {
-            strcat(result, str);
+            rlsl_str_cat(result, result_size, str);
             rlsl_cursor_advance(&cursor_current, source, strlen(str));
             str = NULL;
         }
@@ -252,21 +256,21 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             break;
         }
 
-        int32_t hex_index = str_starts_with_any(source + cursor_current.index, hex_substrings);
+        int32_t hex_index = rlsl_str_starts_with_any(source + cursor_current.index, hex_substrings);
         if(hex_index != -1) {
             str = hex_substrings[hex_index];
             contains_flags |= TOKEN_LITERAL_FLAG_HEX;
             continue;
         }
 
-        int32_t dec_index = str_starts_with_any(source + cursor_current.index, dec_substrings);
+        int32_t dec_index = rlsl_str_starts_with_any(source + cursor_current.index, dec_substrings);
         if(dec_index != -1) {
             str = dec_substrings[dec_index];
             contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
             continue;
         }
 
-        int32_t bin_index = str_starts_with_any(source + cursor_current.index, bin_substrings);
+        int32_t bin_index = rlsl_str_starts_with_any(source + cursor_current.index, bin_substrings);
         if(bin_index != -1) {
             str = bin_substrings[bin_index];
             contains_flags |= TOKEN_LITERAL_FLAG_BINARY;
@@ -298,14 +302,14 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
     if(contains_flags & TOKEN_LITERAL_FLAG_INVALID) {
         rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_CHARACTER_IN_LIT_OR_IDENT, cursor, &cursor_current);
-        rlsl_error_print(&error, compile_unit_identifier, source);
+        rlsl_vec_push(res->errors, error);
         goto done;
     }
 
     if(contains_flags & TOKEN_LITERAL_FLAG_COMMA) {
         if(comma_count > 1) {
             rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_COMMAS, cursor, &cursor_current);
-            rlsl_error_print(&error, compile_unit_identifier, source);
+            rlsl_vec_push(res->errors, error);
             goto done;
         }
 
@@ -314,17 +318,17 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         uint64_t starts_with_bin = (starts_with & TOKEN_LITERAL_FLAG_BINARY) == TOKEN_LITERAL_FLAG_BINARY;
         uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
         uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
-        printf("%d %d\n", starts_with_let, !starts_with_dec);
+        printf("%llu %d\n", starts_with_let, !starts_with_dec);
         if((starts_with_bin || starts_with_hex || starts_with_let || starts_with == 0 || contains_hex)) {
             rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current);
-            rlsl_error_print(&error, compile_unit_identifier, source);
+            rlsl_vec_push(res->errors, error);
             goto done;
         }
 
         errno = 0;
         long double value = strtold(result, NULL);
         bool overflow = errno == ERANGE;
-        printf("%f %d %d\n", value, overflow, !starts_with_dec);
+        printf("%Lf %d %d\n", value, overflow, !starts_with_dec);
         goto done;
     }
 
@@ -351,7 +355,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     if(base_index != -1) {
         if(!valid_number) {
             rlsl_error_t error = rlsl_error_create(base_error_codes[base_index], cursor, &cursor_current);
-            rlsl_error_print(&error, compile_unit_identifier, source);
+            rlsl_vec_push(res->errors, error);
             goto done;
         }
 
@@ -361,7 +365,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         uint64_t value = strtoull(base == 10 ? result : (result + 2), NULL, base);
         bool overflow = errno == ERANGE;
 
-        printf("res: %s %d %llu %d %d\n", result, base, value, contains_flags, overflow);
+        printf("res: %s %d %llu %llu %d\n", result, base, value, contains_flags, overflow);
     }
 done:
     (*cursor) = cursor_current;

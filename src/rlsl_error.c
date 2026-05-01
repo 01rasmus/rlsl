@@ -36,7 +36,7 @@ rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, 
     };
 }
 
-void rlsl_error_print(rlsl_error_t* error, const char* identifier, const char* source) {
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier) {
     printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05llx)\n", identifier, error->start.line, error->start.column, error->message, error->code);
     printf(PRINTF_COL_RESET "\t");
 
