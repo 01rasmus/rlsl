@@ -24,6 +24,7 @@ typedef struct rlsl_token_str_to_type_t {
     the longest
 */
 static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
+    { .string = "uniform", .type = RLSL_TOKEN_KEYWORD_UNIFORM },
     { .string = "double", .type = RLSL_TOKEN_TYPE_DOUBLE },
     { .string = "mat2x2", .type = RLSL_TOKEN_TYPE_MAT2X2 },
     { .string = "mat2x3", .type = RLSL_TOKEN_TYPE_MAT2X3 },
@@ -34,6 +35,7 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = "mat4x2", .type = RLSL_TOKEN_TYPE_MAT4X2 },
     { .string = "mat4x3", .type = RLSL_TOKEN_TYPE_MAT4X3 },
     { .string = "mat4x4", .type = RLSL_TOKEN_TYPE_MAT4X4 },
+    { .string = "output", .type = RLSL_TOKEN_KEYWORD_OUTPUT },
     { .string = "return", .type = RLSL_TOKEN_KEYWORD_RETURN },
     { .string = "struct", .type = RLSL_TOKEN_KEYWORD_STRUCT },
     { .string = "bvec2", .type = RLSL_TOKEN_TYPE_BVEC2 },
@@ -45,6 +47,7 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = "dvec4", .type = RLSL_TOKEN_TYPE_DVEC4 },
     { .string = "false", .type = RLSL_TOKEN_LITERAL_FALSE },
     { .string = "float", .type = RLSL_TOKEN_TYPE_FLOAT },
+    { .string = "input", .type = RLSL_TOKEN_KEYWORD_INPUT },
     { .string = "ivec2", .type = RLSL_TOKEN_TYPE_IVEC2 },
     { .string = "ivec3", .type = RLSL_TOKEN_TYPE_IVEC3 },
     { .string = "ivec4", .type = RLSL_TOKEN_TYPE_IVEC4 },

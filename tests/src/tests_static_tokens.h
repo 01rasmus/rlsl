@@ -6,6 +6,24 @@ bool test_token_static_double() {
     return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_DOUBLE;
 }
 
+bool test_token_static_uniform() {
+    const char* source = "uniform";
+    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
+    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_UNIFORM;
+}
+
+bool test_token_static_input() {
+    const char* source = "input";
+    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
+    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_INPUT;
+}
+
+bool test_token_static_output() {
+    const char* source = "output";
+    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
+    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_OUTPUT;
+}
+
 bool test_token_static_mat2x2() {
     const char* source = "mat2x2";
     rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);

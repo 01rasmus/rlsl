@@ -16,6 +16,9 @@ typedef struct test_registration_t {
 
 test_registration_t tests[] = {
     { .name = "token static double", .function = test_token_static_double },
+    { .name = "token static uniform", .function = test_token_static_uniform },
+    { .name = "token static input", .function = test_token_static_input },
+    { .name = "token static output", .function = test_token_static_output },
     { .name = "token static mat2x2", .function = test_token_static_mat2x2 },
     { .name = "token static mat2x3", .function = test_token_static_mat2x3 },
     { .name = "token static mat2x4", .function = test_token_static_mat2x4 },
