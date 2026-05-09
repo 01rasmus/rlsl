@@ -103,7 +103,11 @@ typedef struct rlsl_token_t {
         struct {
             uint64_t value;
             bool overflow;
-        } integer;
+        } num_int;
+        struct {
+            long double value;
+            bool overflow;
+        } num_float;
     } value;
 } rlsl_token_t;
 

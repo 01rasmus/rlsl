@@ -13,6 +13,8 @@
     X(FLOAT_TOO_MANY_COMMAS,                0x10004,    "floating point has too many commas",           RLSL_SEVERITY_ERROR) \
     X(INVALID_CHARACTER_IN_LIT_OR_IDENT,    0x10005,    "invalid character in literal or identifier",   RLSL_SEVERITY_ERROR) \
     X(FLOAT_IS_NOT_DECIMAL,                 0x10006,    "floating point is not a decimal number",       RLSL_SEVERITY_ERROR) \
+    X(FLOAT_HAS_TWO_ZEROS_AT_START,         0x10007,    "floating point has two zeros at the start",    RLSL_SEVERITY_ERROR) \
+    X(DECIMAL_HAS_ZERO_AT_START,            0x10008,    "decimal number has a zero at the start",       RLSL_SEVERITY_ERROR) \
 
 typedef enum rlsl_error_enum_t {
     #define X(NAME, CODE, MESSAGE, SEVERITY) RLSL_ERROR_##NAME = CODE,
@@ -23,10 +25,10 @@ typedef enum rlsl_error_enum_t {
 typedef struct rlsl_error_t {
     const char* message;
     uint8_t severity;
-    uint64_t code;
+    rlsl_error_enum_t code;
     rlsl_cursor_t start;
     rlsl_cursor_t end;
 } rlsl_error_t;
 
-rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end);
+rlsl_error_t rlsl_error_create(rlsl_error_enum_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end);
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier);

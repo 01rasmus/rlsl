@@ -329,7 +329,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         errno = 0;
         long double value = strtold(result, NULL);
         bool overflow = errno == ERANGE;
-        printf("%Lf %d %d\n", value, overflow, !starts_with_dec);
+        printf("%s %Lf %d %d\n", result, value, overflow, !starts_with_dec);
         goto done;
     }
 
@@ -369,7 +369,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         rlsl_token_t token = (rlsl_token_t){
             .type = RLSL_TOKEN_LITERAL_INT,
             .value = {
-                .integer = {
+                .num_int = {
                     .value = value,
                     .overflow = overflow,
                 }

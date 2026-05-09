@@ -2,7 +2,7 @@
 #include "rlsl_tools/rlsl_str.h"
 #include "rlsl_error.h"
 
-rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end) {
+rlsl_error_t rlsl_error_create(rlsl_error_enum_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end) {
     uint8_t severity = 0;
     const char* message = NULL;
 
@@ -27,7 +27,7 @@ rlsl_error_t rlsl_error_create(uint64_t error_code, const rlsl_cursor_t* start, 
 }
 
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier) {
-    printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05llx)\n", identifier, error->start.line, error->start.column, error->message, error->code);
+    printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message, error->code);
     printf(PRINTF_COL_RESET "\t");
 
     const int64_t offset = 10;
