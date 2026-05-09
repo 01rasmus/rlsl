@@ -111,6 +111,7 @@ void rlsl_token_free(rlsl_token_t* token) {
     and should not be changed
 */
 static rlsl_tokenizer_function_t tokenizer_functions[] = {
+    _rlsl_token_tokenizer_parse_comments,
     _rlsl_token_tokenizer_parse_space,
     _rlsl_token_tokenizer_parse_static_tokens,
     _rlsl_token_tokenizer_parse_literal,
@@ -445,5 +446,45 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     goto done;
 done:
     (*cursor) = cursor_current;
+    return true;
+}
+#include <stdio.h>
+bool _rlsl_token_tokenizer_parse_comments(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+    const char* str = source + cursor->index;
+    const char* end = NULL;
+    bool is_comment = false;
+    if(strncmp(str, "//", 2) == 0) {
+        end = strpbrk(str, "\n");
+        if(end) {
+            end++; //include the breakline character
+        }
+        is_comment = true;
+    } else if(strncmp(source + cursor->index, "/*", 2) == 0) {
+        end = strstr(str, "*/");
+        if(end) {
+            end += 2; //include the end */ character
+        }
+
+        is_comment = true;
+    }
+
+    if(!is_comment) {
+        return false;
+    }
+
+    if(!end) {
+        end = strchr(str, '\0'); //the same as "str + strlen(str)"
+    }
+    ptrdiff_t diff = end - str;
+
+    rlsl_cursor_t cur_start = (*cursor);
+    rlsl_cursor_advance(cursor, source, diff);
+
+    rlsl_token_t token = (rlsl_token_t){
+        .type = RLSL_TOKEN_SYMBOL_COMMENT,
+        .cursor_start = cur_start,
+        .cursor_end = (*cursor),
+    };
+    rlsl_vec_push(res->tokens, token);
     return true;
 }
