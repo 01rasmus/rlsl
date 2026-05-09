@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <rlsl_tools/rlsl_str.h>
 
-#include "tests_static_tokens.h"
-#include "tests_numbers.h"
-#include "tests_identifier.h"
-#include "tests_comments.h"
+#include "tests_token_static.h"
+#include "tests_token_numbers.h"
+#include "tests_token_identifier.h"
+#include "tests_token_comments.h"
 
 #define TEST_REGISTRATION(TEST) { .name = #TEST, .function = TEST }
 
