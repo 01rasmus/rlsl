@@ -108,6 +108,12 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_number_binary_with_zeroes_at_start),
     TEST_REGISTRATION(test_token_number_ensure_error_hexadecimal_with_more_than_one_zero_at_start),
     TEST_REGISTRATION(test_token_number_ensure_error_binary_with_more_than_one_zero_at_start),
+    TEST_REGISTRATION(test_token_number_float_operators),
+    TEST_REGISTRATION(test_token_number_float_operators_with_space),
+    TEST_REGISTRATION(test_token_number_integer_operators),
+    TEST_REGISTRATION(test_token_number_integer_operators_with_space),
+    TEST_REGISTRATION(test_token_number_integer_operators_with_new_line),
+    TEST_REGISTRATION(test_token_number_integer_operators_with_tab),
 
     TEST_REGISTRATION(test_token_identifier),
     TEST_REGISTRATION(test_token_identifier_address_sequence),

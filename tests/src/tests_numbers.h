@@ -97,3 +97,65 @@ bool test_token_number_ensure_error_hexadecimal_with_more_than_one_zero_at_start
 bool test_token_number_ensure_error_binary_with_more_than_one_zero_at_start() {
     return expect_error("00b10", RLSL_ERROR_INVALID_BINARY_NUMBER, 1, 1, 1, 6);
 }
+
+bool test_token_number_float_operators() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_FLOAT(1.0),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_PLUS),
+        EXPECT_TOKEN_FLOAT(2.0),
+    };
+    return expect_tokens("1.0+2.0", tokens);
+}
+
+bool test_token_number_float_operators_with_space() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_FLOAT(1.0),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_STAR),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN_FLOAT(2.0),
+    };
+    return expect_tokens("1.0 * 2.0", tokens);
+}
+
+bool test_token_number_integer_operators() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_INT(100),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_PLUS),
+        EXPECT_TOKEN_INT(200),
+    };
+    return expect_tokens("100+200", tokens);
+}
+
+bool test_token_number_integer_operators_with_space() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_INT(100),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_STAR),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN_INT(200),
+    };
+    return expect_tokens("100 * 200", tokens);
+}
+
+bool test_token_number_integer_operators_with_new_line() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_INT(100),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_STAR),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN_INT(200),
+    };
+    return expect_tokens("100 *\n 200", tokens);
+}
+
+bool test_token_number_integer_operators_with_tab() {
+    const expect_token_t tokens[] = {
+        EXPECT_TOKEN_INT(100),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_STAR),
+        EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
+        EXPECT_TOKEN_INT(200),
+    };
+    return expect_tokens("100 *\t 200", tokens);
+}
