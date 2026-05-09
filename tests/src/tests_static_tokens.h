@@ -1,391 +1,266 @@
 #include <rlsl_token.h>
 
-bool test_token_static_double() {
-    const char* source = "double";
+bool test_token_static(const char* source, rlsl_token_type_t type) {
     rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_DOUBLE;
+    return res.token_count == 1 && res.tokens[0].type == type && res.error_count == 0;
+}
+
+bool test_token_static_double() {
+    return test_token_static("double", RLSL_TOKEN_TYPE_DOUBLE);
 }
 
 bool test_token_static_uniform() {
-    const char* source = "uniform";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_UNIFORM;
+    return test_token_static("uniform", RLSL_TOKEN_KEYWORD_UNIFORM);
 }
 
 bool test_token_static_input() {
-    const char* source = "input";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_INPUT;
+    return test_token_static("input", RLSL_TOKEN_KEYWORD_INPUT);
 }
 
 bool test_token_static_output() {
-    const char* source = "output";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_OUTPUT;
+    return test_token_static("output", RLSL_TOKEN_KEYWORD_OUTPUT);
 }
 
 bool test_token_static_mat2x2() {
-    const char* source = "mat2x2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT2X2;
+    return test_token_static("mat2x2", RLSL_TOKEN_TYPE_MAT2X2);
 }
 
 bool test_token_static_mat2x3() {
-    const char* source = "mat2x3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT2X3;
+    return test_token_static("mat2x3", RLSL_TOKEN_TYPE_MAT2X3);
 }
 
 bool test_token_static_mat2x4() {
-    const char* source = "mat2x4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT2X4;
+    return test_token_static("mat2x4", RLSL_TOKEN_TYPE_MAT2X4);
 }
 
 bool test_token_static_mat3x2() {
-    const char* source = "mat3x2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT3X2;
+    return test_token_static("mat3x2", RLSL_TOKEN_TYPE_MAT3X2);
 }
 
 bool test_token_static_mat3x3() {
-    const char* source = "mat3x3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT3X3;
+    return test_token_static("mat3x3", RLSL_TOKEN_TYPE_MAT3X3);
 }
 
 bool test_token_static_mat3x4() {
-    const char* source = "mat3x4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT3X4;
+    return test_token_static("mat3x4", RLSL_TOKEN_TYPE_MAT3X4);
 }
 
 bool test_token_static_mat4x2() {
-    const char* source = "mat4x2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT4X2;
+    return test_token_static("mat4x2", RLSL_TOKEN_TYPE_MAT4X2);
 }
 
 bool test_token_static_mat4x3() {
-    const char* source = "mat4x3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT4X3;
+    return test_token_static("mat4x3", RLSL_TOKEN_TYPE_MAT4X3);
 }
 
 bool test_token_static_mat4x4() {
-    const char* source = "mat4x4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT4X4;
+    return test_token_static("mat4x4", RLSL_TOKEN_TYPE_MAT4X4);
 }
 
 bool test_token_static_return() {
-    const char* source = "return";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_RETURN;
+    return test_token_static("return", RLSL_TOKEN_KEYWORD_RETURN);
 }
 
 bool test_token_static_struct() {
-    const char* source = "struct";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_STRUCT;
+    return test_token_static("struct", RLSL_TOKEN_KEYWORD_STRUCT);
 }
 
 bool test_token_static_bvec2() {
-    const char* source = "bvec2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_BVEC2;
+    return test_token_static("bvec2", RLSL_TOKEN_TYPE_BVEC2);
 }
 
 bool test_token_static_bvec3() {
-    const char* source = "bvec3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_BVEC3;
+    return test_token_static("bvec3", RLSL_TOKEN_TYPE_BVEC3);
 }
 
 bool test_token_static_bvec4() {
-    const char* source = "bvec4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_BVEC4;
+    return test_token_static("bvec4", RLSL_TOKEN_TYPE_BVEC4);
 }
 
 bool test_token_static_const() {
-    const char* source = "const";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_CONST;
+    return test_token_static("const", RLSL_TOKEN_KEYWORD_CONST);
 }
 
 bool test_token_static_dvec2() {
-    const char* source = "dvec2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_DVEC2;
+    return test_token_static("dvec2", RLSL_TOKEN_TYPE_DVEC2);
 }
 
 bool test_token_static_dvec3() {
-    const char* source = "dvec3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_DVEC3;
+    return test_token_static("dvec3", RLSL_TOKEN_TYPE_DVEC3);
 }
 
 bool test_token_static_dvec4() {
-    const char* source = "dvec4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_DVEC4;
+    return test_token_static("dvec4", RLSL_TOKEN_TYPE_DVEC4);
 }
 
 bool test_token_static_false() {
-    const char* source = "false";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_LITERAL_FALSE;
+    return test_token_static("false", RLSL_TOKEN_LITERAL_FALSE);
 }
 
 bool test_token_static_float() {
-    const char* source = "float";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_FLOAT;
+    return test_token_static("float", RLSL_TOKEN_TYPE_FLOAT);
 }
 
 bool test_token_static_ivec2() {
-    const char* source = "ivec2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_IVEC2;
+    return test_token_static("ivec2", RLSL_TOKEN_TYPE_IVEC2);
 }
 
 bool test_token_static_ivec3() {
-    const char* source = "ivec3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_IVEC3;
+    return test_token_static("ivec3", RLSL_TOKEN_TYPE_IVEC3);
 }
 
 bool test_token_static_ivec4() {
-    const char* source = "ivec4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_IVEC4;
+    return test_token_static("ivec4", RLSL_TOKEN_TYPE_IVEC4);
 }
 
 bool test_token_static_uvec2() {
-    const char* source = "uvec2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_UVEC2;
+    return test_token_static("uvec2", RLSL_TOKEN_TYPE_UVEC2);
 }
 
 bool test_token_static_uvec3() {
-    const char* source = "uvec3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_UVEC3;
+    return test_token_static("uvec3", RLSL_TOKEN_TYPE_UVEC3);
 }
 
 bool test_token_static_uvec4() {
-    const char* source = "uvec4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_UVEC4;
+    return test_token_static("uvec4", RLSL_TOKEN_TYPE_UVEC4);
 }
 
 bool test_token_static_while() {
-    const char* source = "while";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_WHILE;
+    return test_token_static("while", RLSL_TOKEN_KEYWORD_WHILE);
 }
 
 bool test_token_static_bool() {
-    const char* source = "bool";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_BOOL;
+    return test_token_static("bool", RLSL_TOKEN_TYPE_BOOL);
 }
 
 bool test_token_static_else() {
-    const char* source = "else";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_ELSE;
+    return test_token_static("else", RLSL_TOKEN_KEYWORD_ELSE);
 }
 
 bool test_token_static_mat2() {
-    const char* source = "mat2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT2;
+    return test_token_static("mat2", RLSL_TOKEN_TYPE_MAT2);
 }
 
 bool test_token_static_mat3() {
-    const char* source = "mat3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT3;
+    return test_token_static("mat3", RLSL_TOKEN_TYPE_MAT3);
 }
 
 bool test_token_static_mat4() {
-    const char* source = "mat4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_MAT4;
+    return test_token_static("mat4", RLSL_TOKEN_TYPE_MAT4);
 }
 
 bool test_token_static_true() {
-    const char* source = "true";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_LITERAL_TRUE;
+    return test_token_static("true", RLSL_TOKEN_LITERAL_TRUE);
 }
 
 bool test_token_static_uint() {
-    const char* source = "uint";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_UINT;
+    return test_token_static("uint", RLSL_TOKEN_TYPE_UINT);
 }
 
 bool test_token_static_vec2() {
-    const char* source = "vec2";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_VEC2;
+    return test_token_static("vec2", RLSL_TOKEN_TYPE_VEC2);
 }
 
 bool test_token_static_vec3() {
-    const char* source = "vec3";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_VEC3;
+    return test_token_static("vec3", RLSL_TOKEN_TYPE_VEC3);
 }
 
 bool test_token_static_vec4() {
-    const char* source = "vec4";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_VEC4;
+    return test_token_static("vec4", RLSL_TOKEN_TYPE_VEC4);
 }
 
 bool test_token_static_for() {
-    const char* source = "for";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_FOR;
+    return test_token_static("for", RLSL_TOKEN_KEYWORD_FOR);
 }
 
 bool test_token_static_int() {
-    const char* source = "int";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_TYPE_INT;
+    return test_token_static("int", RLSL_TOKEN_TYPE_INT);
 }
 
 bool test_token_static_if() {
-    const char* source = "if";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_KEYWORD_IF;
+    return test_token_static("if", RLSL_TOKEN_KEYWORD_IF);
 }
 
 bool test_token_static_dash() {
-    const char* source = "-";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_DASH;
+    return test_token_static("-", RLSL_TOKEN_SYMBOL_DASH);
 }
 
 bool test_token_static_comma() {
-    const char* source = ",";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_COMMA;
+    return test_token_static(",", RLSL_TOKEN_SYMBOL_COMMA);
 }
 
 bool test_token_static_semi_colon() {
-    const char* source = ";";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_SEMICOLON;
+    return test_token_static(";", RLSL_TOKEN_SYMBOL_SEMICOLON);
 }
 
 bool test_token_static_colon() {
-    const char* source = ":";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_COLON;
+    return test_token_static(":", RLSL_TOKEN_SYMBOL_COLON);
 }
 
 bool test_token_static_exclamation_mark() {
-    const char* source = "!";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_EXCLAMATION;
+    return test_token_static("!", RLSL_TOKEN_SYMBOL_EXCLAMATION);
 }
 
 bool test_token_static_opened_paranthesis() {
-    const char* source = "(";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED;
+    return test_token_static("(", RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED);
 }
 
 bool test_token_static_closed_paranthesis() {
-    const char* source = ")";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED;
+    return test_token_static(")", RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED);
 }
 
 bool test_token_static_opened_bracket() {
-    const char* source = "[";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_BRACKET_OPENED;
+    return test_token_static("[", RLSL_TOKEN_SYMBOL_BRACKET_OPENED);
 }
 
 bool test_token_static_closed_bracket() {
-    const char* source = "]";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_BRACKET_CLOSED;
+    return test_token_static("]", RLSL_TOKEN_SYMBOL_BRACKET_CLOSED);
 }
 
 bool test_token_static_opened_curly_bracket() {
-    const char* source = "{";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED;
+    return test_token_static("{", RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED);
 }
 
 bool test_token_static_closed_curly_bracket() {
-    const char* source = "}";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED;
+    return test_token_static("}", RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED);
 }
 
 bool test_token_static_star() {
-    const char* source = "*";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_STAR;
+    return test_token_static("*", RLSL_TOKEN_SYMBOL_STAR);
 }
 
 bool test_token_static_forward_slash() {
-    const char* source = "/";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_FORWARD_SLASH;
+    return test_token_static("/", RLSL_TOKEN_SYMBOL_FORWARD_SLASH);
 }
 
 bool test_token_static_and() {
-    const char* source = "&";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_AND;
+    return test_token_static("&", RLSL_TOKEN_SYMBOL_AND);
 }
 
 bool test_token_static_percent() {
-    const char* source = "%";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_PERCENT;
+    return test_token_static("%", RLSL_TOKEN_SYMBOL_PERCENT);
 }
 
 bool test_token_static_plus() {
-    const char* source = "+";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_PLUS;
+    return test_token_static("+", RLSL_TOKEN_SYMBOL_PLUS);
 }
 
 bool test_token_static_arrow_left() {
-    const char* source = "<";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_ARROW_LEFT;
+    return test_token_static("<", RLSL_TOKEN_SYMBOL_ARROW_LEFT);
 }
 
 bool test_token_static_equal() {
-    const char* source = "=";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_EQUAL;
+    return test_token_static("=", RLSL_TOKEN_SYMBOL_EQUAL);
 }
 
 bool test_token_static_arrow_right() {
-    const char* source = ">";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_ARROW_RIGHT;
+    return test_token_static(">", RLSL_TOKEN_SYMBOL_ARROW_RIGHT);
 }
 
 bool test_token_static_bar() {
-    const char* source = "|";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_PIPE;
+    return test_token_static("|", RLSL_TOKEN_SYMBOL_PIPE);
 }
 
 bool test_token_static_tilde() {
-    const char* source = "~";
-    rlsl_tokenizer_result_t res = rlsl_token_tokenize_string(source, NULL);
-    return res.token_count == 1 && res.tokens[0].type == RLSL_TOKEN_SYMBOL_TILDE;
+    return test_token_static("~", RLSL_TOKEN_SYMBOL_TILDE);
 }
