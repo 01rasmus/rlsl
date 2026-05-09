@@ -6,6 +6,7 @@
 
 #include "tests_static_tokens.h"
 #include "tests_numbers.h"
+#include "tests_identifier.h"
 
 #define TEST_REGISTRATION(TEST) { .name = #TEST, .function = TEST }
 
@@ -82,6 +83,7 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_static_arrow_right),
     TEST_REGISTRATION(test_token_static_bar),
     TEST_REGISTRATION(test_token_static_tilde),
+    TEST_REGISTRATION(test_token_static_dot),
 
     TEST_REGISTRATION(test_token_number_with_line_break),
     TEST_REGISTRATION(test_token_number_hexadecimal_full_range),
@@ -106,6 +108,9 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_number_binary_with_zeroes_at_start),
     TEST_REGISTRATION(test_token_number_ensure_error_hexadecimal_with_more_than_one_zero_at_start),
     TEST_REGISTRATION(test_token_number_ensure_error_binary_with_more_than_one_zero_at_start),
+
+    TEST_REGISTRATION(test_token_identifier),
+    TEST_REGISTRATION(test_token_identifier_address_sequence),
 };
 
 int32_t main() {

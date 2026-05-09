@@ -78,6 +78,7 @@ typedef enum rlsl_token_type_t {
     RLSL_TOKEN_SYMBOL_PLUS,
     RLSL_TOKEN_SYMBOL_FORWARD_SLASH,
     RLSL_TOKEN_SYMBOL_TILDE,
+    RLSL_TOKEN_SYMBOL_DOT,
     RLSL_TOKEN_SYMBOL_AND,
     RLSL_TOKEN_SYMBOL_PIPE,
     RLSL_TOKEN_SYMBOL_PERCENT,
@@ -108,6 +109,7 @@ typedef struct rlsl_token_t {
             long double value;
             bool overflow;
         } num_float;
+        char* identifier;
     } value;
 } rlsl_token_t;
 

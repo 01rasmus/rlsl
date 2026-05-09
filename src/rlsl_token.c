@@ -75,6 +75,7 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = ";", .type = RLSL_TOKEN_SYMBOL_SEMICOLON },
     { .string = ":", .type = RLSL_TOKEN_SYMBOL_COLON },
     { .string = "!", .type = RLSL_TOKEN_SYMBOL_EXCLAMATION },
+    { .string = ".", .type = RLSL_TOKEN_SYMBOL_DOT },
     { .string = "(", .type = RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED },
     { .string = ")", .type = RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED },
     { .string = "[", .type = RLSL_TOKEN_SYMBOL_BRACKET_OPENED },
@@ -194,7 +195,7 @@ bool _rlsl_token_tokenizer_parse_static_tokens(rlsl_cursor_t* cursor, rlsl_token
         rlsl_token_str_to_type_t* stt = &rlsl_token_static_matches[i];
         size_t token_string_length = strlen(stt->string);
 
-        if(strcmp(stt->string, source + cursor_current.index) == 0) {
+        if(strncmp(stt->string, source + cursor_current.index, strlen(stt->string)) == 0) {
             if(rlsl_cursor_advance(&cursor_current, source, token_string_length) != token_string_length) {
                 break;
             }
@@ -211,8 +212,6 @@ bool _rlsl_token_tokenizer_parse_static_tokens(rlsl_cursor_t* cursor, rlsl_token
     }
     return found_token;
 }
-
-#include <stdio.h>
 
 bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     rlsl_cursor_t cursor_current = (*cursor);
@@ -253,7 +252,9 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         }
 
         const char current_char = source[cursor_current.index];
-        if(isspace(current_char) || current_char == '\0') {
+        const bool is_identifier = (contains_flags & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
+        const bool should_continue = isalnum(current_char) || current_char == '_' || (current_char == '.' && !is_identifier);
+        if(!should_continue) {
             break;
         }
 
@@ -278,7 +279,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             continue;
         }
         
-        if(isalpha(current_char)) {
+        if(isalpha(current_char) || current_char == '_') {
             temp[0] = current_char;
             str = temp;
             contains_flags |= TOKEN_LITERAL_FLAG_LETTER;
@@ -423,7 +424,25 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             .cursor_end = cursor_current
         };
         rlsl_vec_push(res->tokens, token);
+        goto done;
     }
+
+    size_t identifier_size = strlen(result) + 1;
+    char* identifier = malloc(identifier_size);
+    if(identifier) {
+        memcpy(identifier, result, identifier_size);
+    }
+
+    rlsl_token_t token = (rlsl_token_t){
+        .type = RLSL_TOKEN_LITERAL_IDENTIFIER,
+        .value = {
+            .identifier = identifier,
+        },
+        .cursor_start = (*cursor),
+        .cursor_end = cursor_current
+    };
+    rlsl_vec_push(res->tokens, token);
+    goto done;
 done:
     (*cursor) = cursor_current;
     return true;
