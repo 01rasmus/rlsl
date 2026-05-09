@@ -10,11 +10,11 @@
     X(INVALID_BINARY_NUMBER,                0x10001,    "not a valid binary number",                    RLSL_SEVERITY_ERROR) \
     X(INVALID_DECIMAL_NUMBER,               0x10002,    "not a valid number",                           RLSL_SEVERITY_ERROR) \
     X(INVALID_HEXADECIMAL_NUMBER,           0x10003,    "not a valid hexadecimal number",               RLSL_SEVERITY_ERROR) \
-    X(FLOAT_TOO_MANY_COMMAS,                0x10004,    "floating point has too many commas",           RLSL_SEVERITY_ERROR) \
+    X(FLOAT_TOO_MANY_DECIMAL_POINTS,        0x10004,    "floating point has too decimal points",        RLSL_SEVERITY_ERROR) \
     X(INVALID_CHARACTER_IN_LIT_OR_IDENT,    0x10005,    "invalid character in literal or identifier",   RLSL_SEVERITY_ERROR) \
     X(FLOAT_IS_NOT_DECIMAL,                 0x10006,    "floating point is not a decimal number",       RLSL_SEVERITY_ERROR) \
-    X(FLOAT_HAS_TWO_ZEROS_AT_START,         0x10007,    "floating point has two zeros at the start",    RLSL_SEVERITY_ERROR) \
-    X(DECIMAL_HAS_ZERO_AT_START,            0x10008,    "decimal number has a zero at the start",       RLSL_SEVERITY_ERROR) \
+    X(FLOAT_HAS_TWO_LEADING_ZEROS,          0x10007,    "floating point has two leading zeros",         RLSL_SEVERITY_ERROR) \
+    X(DECIMAL_LEADING_ZERO,                 0x10008,    "decimal number has a leading zero",            RLSL_SEVERITY_ERROR) \
 
 typedef enum rlsl_error_enum_t {
     #define X(NAME, CODE, MESSAGE, SEVERITY) RLSL_ERROR_##NAME = CODE,

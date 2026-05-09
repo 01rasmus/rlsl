@@ -59,7 +59,7 @@ bool test_token_number_ensure_error_binary_with_decimal() {
 }
 
 bool test_token_number_ensure_error_float_with_multiple_commas() {
-    return expect_error("0.0.1", RLSL_ERROR_FLOAT_TOO_MANY_COMMAS, 1, 1, 1, 6);
+    return expect_error("0.0.1", RLSL_ERROR_FLOAT_TOO_MANY_DECIMAL_POINTS, 1, 1, 1, 6);
 }
 
 bool test_token_number_ensure_error_hexadecimal_with_invalid_character() {
@@ -75,7 +75,7 @@ bool test_token_number_ensure_error_binary_with_invalid_character() {
 }
 
 bool test_token_number_ensure_error_decimal_with_zero_at_start() {
-    return expect_error("010378198", RLSL_ERROR_DECIMAL_HAS_ZERO_AT_START, 1, 1, 1, 10);
+    return expect_error("010378198", RLSL_ERROR_DECIMAL_LEADING_ZERO, 1, 1, 1, 10);
 }
 
 bool test_token_number_float_with_multiple_zeros_at_start() {

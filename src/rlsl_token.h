@@ -3,13 +3,13 @@
 #include "rlsl_cursor.h"
 #include "rlsl_error.h"
 
-#define TOKEN_LITERAL_FLAG_BINARY       0x1
-#define TOKEN_LITERAL_FLAG_DECIMAL      (0x2 | TOKEN_LITERAL_FLAG_BINARY)
-#define TOKEN_LITERAL_FLAG_HEX          (0x4 | TOKEN_LITERAL_FLAG_DECIMAL)
-#define TOKEN_LITERAL_FLAG_NUMBER       0x8
-#define TOKEN_LITERAL_FLAG_LETTER       0x10
-#define TOKEN_LITERAL_FLAG_COMMA        0x20
-#define TOKEN_LITERAL_FLAG_INVALID      0x40
+#define TOKEN_LITERAL_FLAG_BINARY           0x1
+#define TOKEN_LITERAL_FLAG_DECIMAL          (0x2 | TOKEN_LITERAL_FLAG_BINARY)
+#define TOKEN_LITERAL_FLAG_HEX              (0x4 | TOKEN_LITERAL_FLAG_DECIMAL)
+#define TOKEN_LITERAL_FLAG_NUMBER           0x8
+#define TOKEN_LITERAL_FLAG_LETTER           0x10
+#define TOKEN_LITERAL_FLAG_DECIMAL_POINT    0x20
+#define TOKEN_LITERAL_FLAG_INVALID          0x40
 
 typedef enum rlsl_token_type_t {
     //literals

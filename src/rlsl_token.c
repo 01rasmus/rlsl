@@ -223,7 +223,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
     uint64_t contains_flags = 0;
     uint64_t starts_with = 0;
-    uint32_t comma_count = 0;
+    uint32_t decimal_point_count = 0;
     bool has_invalid_letter = false;
     bool has_letter = false;
 
@@ -289,8 +289,8 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         if(current_char == '.') {
             temp[0] = '.';
             str = temp;
-            comma_count++;
-            contains_flags |= TOKEN_LITERAL_FLAG_COMMA;
+            decimal_point_count++;
+            contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL_POINT;
             continue;
         }
 
@@ -308,7 +308,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         goto done;
     }
 
-    if(contains_flags & TOKEN_LITERAL_FLAG_COMMA) {
+    if(contains_flags & TOKEN_LITERAL_FLAG_DECIMAL_POINT) {
         uint64_t starts_with_hex = starts_with == TOKEN_LITERAL_FLAG_HEX;
         uint64_t starts_with_dec = starts_with == TOKEN_LITERAL_FLAG_DECIMAL;
         uint64_t starts_with_bin = starts_with ==  TOKEN_LITERAL_FLAG_BINARY;
@@ -324,8 +324,8 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             rlsl_vec_push(res->errors, error);
             goto done;
         }
-        if(comma_count > 1) {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_COMMAS, cursor, &cursor_current);
+        if(decimal_point_count > 1) {
+            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_DECIMAL_POINTS, cursor, &cursor_current);
             rlsl_vec_push(res->errors, error);
             goto done;
         }
@@ -390,7 +390,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
         //decimal numbers cannot start with zeros (in some languages they can but then they would be octal)
         if(result[0] == '0') {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_DECIMAL_HAS_ZERO_AT_START, cursor, &cursor_current);
+            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_DECIMAL_LEADING_ZERO, cursor, &cursor_current);
             rlsl_vec_push(res->errors, error);
             goto done;
         }
