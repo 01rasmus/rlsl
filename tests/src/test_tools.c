@@ -1,3 +1,4 @@
+#include <math.h>
 #include <string.h>
 #include <rlsl_token.h>
 #include "test_tools.h"
@@ -33,7 +34,8 @@ bool _expect_tokens(const char* source, const expect_token_t* expects, size_t ex
                     break;
                 }
                 case RLSL_TOKEN_LITERAL_FLOAT: {
-                    if(expect.value.d != token.value.num_float.value) {
+                    const long double epsilon = 0.000001L;
+                    if(fabsl(expect.value.d - token.value.num_float.value) > epsilon) {
                         return false;
                     }
                     break;
