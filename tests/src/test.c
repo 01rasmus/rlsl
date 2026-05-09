@@ -104,6 +104,8 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_number_float_with_multiple_zeros_at_start),
     TEST_REGISTRATION(test_token_number_hexadecimal_with_zeroes_at_start),
     TEST_REGISTRATION(test_token_number_binary_with_zeroes_at_start),
+    TEST_REGISTRATION(test_token_number_ensure_error_hexadecimal_with_more_than_one_zero_at_start),
+    TEST_REGISTRATION(test_token_number_ensure_error_binary_with_more_than_one_zero_at_start),
 };
 
 int32_t main() {

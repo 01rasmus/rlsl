@@ -308,19 +308,27 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     }
 
     if(contains_flags & TOKEN_LITERAL_FLAG_COMMA) {
+        uint64_t starts_with_hex = starts_with == TOKEN_LITERAL_FLAG_HEX;
+        uint64_t starts_with_dec = starts_with == TOKEN_LITERAL_FLAG_DECIMAL;
+        uint64_t starts_with_bin = starts_with ==  TOKEN_LITERAL_FLAG_BINARY;
+        uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
+        uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
+        if(starts_with_bin) {
+            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current);
+            rlsl_vec_push(res->errors, error);
+            goto done;
+        }
+        if(starts_with_hex) {
+            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current);
+            rlsl_vec_push(res->errors, error);
+            goto done;
+        }
         if(comma_count > 1) {
             rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_COMMAS, cursor, &cursor_current);
             rlsl_vec_push(res->errors, error);
             goto done;
         }
-
-        uint64_t starts_with_hex = (starts_with & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
-        uint64_t starts_with_dec = (starts_with & TOKEN_LITERAL_FLAG_DECIMAL) == TOKEN_LITERAL_FLAG_DECIMAL;
-        uint64_t starts_with_bin = (starts_with & TOKEN_LITERAL_FLAG_BINARY) == TOKEN_LITERAL_FLAG_BINARY;
-        uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
-        uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
-        printf("%llu %d\n", starts_with_let, !starts_with_dec);
-        if((starts_with_bin || starts_with_hex || starts_with_let || starts_with == 0 || contains_hex)) {
+        if(!starts_with_dec || starts_with == 0 || contains_hex) {
             rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current);
             rlsl_vec_push(res->errors, error);
             goto done;
@@ -329,7 +337,19 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         errno = 0;
         long double value = strtold(result, NULL);
         bool overflow = errno == ERANGE;
-        printf("%s %Lf %d %d\n", result, value, overflow, !starts_with_dec);
+
+        rlsl_token_t token = (rlsl_token_t){
+            .type = RLSL_TOKEN_LITERAL_FLOAT,
+            .value = {
+                .num_float = {
+                    .value = value,
+                    .overflow = overflow
+                }
+            },
+            .cursor_start = (*cursor),
+            .cursor_end = cursor_current
+        };
+        rlsl_vec_push(res->tokens, token);
         goto done;
     }
 
@@ -348,6 +368,31 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     } else if(starts_with == TOKEN_LITERAL_FLAG_DECIMAL) {
         valid_number = (contains_flags == TOKEN_LITERAL_FLAG_DECIMAL) || (contains_flags == TOKEN_LITERAL_FLAG_BINARY);
         base_index = 1;
+        
+        //check if there were a bunch of zeroes at the start that follows 0x or 0b
+        for(int64_t i = 0; i < strlen(result); i++) {
+            if(result[i] != '0') {
+                break;
+            }
+
+            uint64_t which = rlsl_str_starts_with_any(result + i, integer_prefixes);
+            if(which == 0) {
+                rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current);
+                rlsl_vec_push(res->errors, error);
+                goto done;
+            } else if(which == 1) {
+                rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current);
+                rlsl_vec_push(res->errors, error);
+                goto done;
+            }
+        }
+
+        //decimal numbers cannot start with zeros (in some languages they can but then they would be octal)
+        if(result[0] == '0') {
+            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_DECIMAL_HAS_ZERO_AT_START, cursor, &cursor_current);
+            rlsl_vec_push(res->errors, error);
+            goto done;
+        }
     } else if(starts_with == TOKEN_LITERAL_FLAG_BINARY) {
         valid_number = contains_flags == TOKEN_LITERAL_FLAG_BINARY;
         base_index = 0;
@@ -378,8 +423,6 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             .cursor_end = cursor_current
         };
         rlsl_vec_push(res->tokens, token);
-
-        //printf("res: %s %d %llu %llu %d\n", result, base, value, contains_flags, overflow);
     }
 done:
     (*cursor) = cursor_current;

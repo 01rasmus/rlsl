@@ -24,7 +24,7 @@ bool _test_token_number_double(const char* source, long double number) {
     if(res.error_count > 0) {
         return false;
     }
-
+    
     rlsl_token_t token = res.tokens[0];
     return token.type == RLSL_TOKEN_LITERAL_FLOAT && token.value.num_float.value == number;
 }
@@ -137,7 +137,7 @@ bool test_token_number_ensure_error_decimal_with_zero_at_start() {
 }
 
 bool test_token_number_float_with_multiple_zeros_at_start() {
-    return _test_token_number_double("00.25", 0.25);
+    return _test_token_number_double("004.0", 4.0);
 }
 
 bool test_token_number_hexadecimal_with_zeroes_at_start() {
@@ -146,4 +146,12 @@ bool test_token_number_hexadecimal_with_zeroes_at_start() {
 
 bool test_token_number_binary_with_zeroes_at_start() {
     return _test_token_number_integer("0b00010", 2);
+}
+
+bool test_token_number_ensure_error_hexadecimal_with_more_than_one_zero_at_start() {
+    return _test_token_number_error("00x10", RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER);
+}
+
+bool test_token_number_ensure_error_binary_with_more_than_one_zero_at_start() {
+    return _test_token_number_error("00b10", RLSL_ERROR_INVALID_BINARY_NUMBER);
 }
