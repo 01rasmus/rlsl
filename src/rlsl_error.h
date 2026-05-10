@@ -16,6 +16,15 @@
     X(FLOAT_HAS_TWO_LEADING_ZEROS,          0x10007,    "floating point has two leading zeros",         RLSL_SEVERITY_ERROR) \
     X(DECIMAL_LEADING_ZERO,                 0x10008,    "decimal number has a leading zero",            RLSL_SEVERITY_ERROR) \
 
+#define rlsl_error_create(ERROR_CODE, START, END) \
+    (rlsl_error_t) { \
+        .message = rlsl_error_string(ERROR_CODE), \
+        .severity = rlsl_error_severity(ERROR_CODE), \
+        .code = (ERROR_CODE), \
+        .start = (*START), \
+        .end = (*END), \
+    }
+
 typedef enum rlsl_error_enum_t {
     #define X(NAME, CODE, MESSAGE, SEVERITY) RLSL_ERROR_##NAME = CODE,
     RLSL_ERRORS(X)
@@ -30,5 +39,6 @@ typedef struct rlsl_error_t {
     rlsl_cursor_t end;
 } rlsl_error_t;
 
-rlsl_error_t rlsl_error_create(rlsl_error_enum_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end);
+uint8_t rlsl_error_severity(rlsl_error_enum_t error_code);
+const char* rlsl_error_string(rlsl_error_enum_t error_code);
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier);

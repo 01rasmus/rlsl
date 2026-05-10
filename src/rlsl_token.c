@@ -196,13 +196,8 @@ bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_res
         }
     }
     if(is_space) {
-        rlsl_token_t token = (rlsl_token_t){
-            .type = RLSL_TOKEN_SYMBOL_SPACE,
-            .cursor_start = cursor_start,
-            .cursor_end = cursor_current,
-        };
         (*cursor) = cursor_current;
-        rlsl_vec_push(res->tokens, token);
+        rlsl_vec_push(res->tokens, rlsl_token_create_static(RLSL_TOKEN_SYMBOL_SPACE, cursor_start, cursor_current));
     }
     return is_space;
 }
@@ -219,13 +214,8 @@ bool _rlsl_token_tokenizer_parse_static_token(rlsl_cursor_t* cursor, rlsl_tokeni
             if(rlsl_cursor_advance(&cursor_current, source, token_string_length) != token_string_length) {
                 break;
             }
-            rlsl_token_t token = (rlsl_token_t){
-                .type = stt->type,
-                .cursor_start = *cursor,
-                .cursor_end = cursor_current,
-            };
             found_token = true;
-            rlsl_vec_push(res->tokens, token);
+            rlsl_vec_push(res->tokens, rlsl_token_create_static(stt->type, (*cursor), cursor_current));
             (*cursor) = cursor_current;
             break;
         }
@@ -322,8 +312,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     }
 
     if(contains_flags & TOKEN_LITERAL_FLAG_INVALID) {
-        rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_CHARACTER_IN_LIT_OR_IDENT, cursor, &cursor_current);
-        rlsl_vec_push(res->errors, error);
+        rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_CHARACTER_IN_LIT_OR_IDENT, cursor, &cursor_current));
         goto done;
     }
 
@@ -334,42 +323,26 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
         uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
         if(starts_with_bin) {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current));
             goto done;
         }
         if(starts_with_hex) {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current));
             goto done;
         }
         if(decimal_point_count > 1) {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_DECIMAL_POINTS, cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_DECIMAL_POINTS, cursor, &cursor_current));
             goto done;
         }
         if(!starts_with_dec || starts_with == 0 || contains_hex) {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current));
             goto done;
         }
 
         errno = 0;
         long double value = strtold(result, NULL);
         bool overflow = errno == ERANGE;
-
-        rlsl_token_t token = (rlsl_token_t){
-            .type = RLSL_TOKEN_LITERAL_FLOAT,
-            .value = {
-                .num_float = {
-                    .value = value,
-                    .overflow = overflow
-                }
-            },
-            .cursor_start = (*cursor),
-            .cursor_end = cursor_current
-        };
-        rlsl_vec_push(res->tokens, token);
+        rlsl_vec_push(res->tokens, rlsl_token_create_float(value, overflow, (*cursor), cursor_current));
         goto done;
     }
 
@@ -397,20 +370,17 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
             uint64_t which = rlsl_str_starts_with_any(result + i, integer_prefixes);
             if(which == 0) {
-                rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current);
-                rlsl_vec_push(res->errors, error);
+                rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current));
                 goto done;
             } else if(which == 1) {
-                rlsl_error_t error = rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current);
-                rlsl_vec_push(res->errors, error);
+                rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_BINARY_NUMBER, cursor, &cursor_current));
                 goto done;
             }
         }
 
         //decimal numbers cannot start with zeros (in some languages they can but then they would be octal)
         if(result[0] == '0') {
-            rlsl_error_t error = rlsl_error_create(RLSL_ERROR_DECIMAL_LEADING_ZERO, cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_DECIMAL_LEADING_ZERO, cursor, &cursor_current));
             goto done;
         }
     } else if(starts_with == TOKEN_LITERAL_FLAG_BINARY) {
@@ -420,8 +390,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
     if(base_index != -1) {
         if(!valid_number) {
-            rlsl_error_t error = rlsl_error_create(base_error_codes[base_index], cursor, &cursor_current);
-            rlsl_vec_push(res->errors, error);
+            rlsl_vec_push(res->errors, rlsl_error_create(base_error_codes[base_index], cursor, &cursor_current));
             goto done;
         }
 
@@ -431,18 +400,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         uint64_t value = strtoull(base == 10 ? result : (result + 2), NULL, base);
         bool overflow = errno == ERANGE;
 
-        rlsl_token_t token = (rlsl_token_t){
-            .type = RLSL_TOKEN_LITERAL_INT,
-            .value = {
-                .num_int = {
-                    .value = value,
-                    .overflow = overflow,
-                }
-            },
-            .cursor_start = (*cursor),
-            .cursor_end = cursor_current
-        };
-        rlsl_vec_push(res->tokens, token);
+        rlsl_vec_push(res->tokens, rlsl_token_create_int(value, overflow, (*cursor), cursor_current));
         goto done;
     }
 
@@ -452,21 +410,13 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         memcpy(identifier, result, identifier_size);
     }
 
-    rlsl_token_t token = (rlsl_token_t){
-        .type = RLSL_TOKEN_LITERAL_IDENTIFIER,
-        .value = {
-            .identifier = identifier,
-        },
-        .cursor_start = (*cursor),
-        .cursor_end = cursor_current
-    };
-    rlsl_vec_push(res->tokens, token);
+    rlsl_vec_push(res->tokens, rlsl_token_create_identifier(identifier, (*cursor), cursor_current));
     goto done;
 done:
     (*cursor) = cursor_current;
     return true;
 }
-#include <stdio.h>
+
 bool _rlsl_token_tokenizer_parse_comment(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     const char* str = source + cursor->index;
     const char* end = NULL;
@@ -497,12 +447,6 @@ bool _rlsl_token_tokenizer_parse_comment(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
     rlsl_cursor_t cur_start = (*cursor);
     rlsl_cursor_advance(cursor, source, diff);
-
-    rlsl_token_t token = (rlsl_token_t){
-        .type = RLSL_TOKEN_SYMBOL_COMMENT,
-        .cursor_start = cur_start,
-        .cursor_end = (*cursor),
-    };
-    rlsl_vec_push(res->tokens, token);
+    rlsl_vec_push(res->tokens, rlsl_token_create_static(RLSL_TOKEN_SYMBOL_COMMENT, cur_start, (*cursor)));
     return true;
 }

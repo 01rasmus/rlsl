@@ -2,28 +2,32 @@
 #include "rlsl_tools/rlsl_str.h"
 #include "rlsl_error.h"
 
-rlsl_error_t rlsl_error_create(rlsl_error_enum_t error_code, const rlsl_cursor_t* start, const rlsl_cursor_t* end) {
+uint8_t rlsl_error_severity(rlsl_error_enum_t error_code) {
     uint8_t severity = 0;
-    const char* message = NULL;
-
     switch(error_code) {
-        #define X(NAME, CODE, MESSAGE, SEVERITY) case CODE: { message = MESSAGE; severity = SEVERITY; break; }
+        #define X(NAME, CODE, MESSAGE, SEVERITY) case CODE: { severity = SEVERITY; break; }
         RLSL_ERRORS(X)
         #undef X
         default: {
             severity = RLSL_SEVERITY_ERROR;
+            break;
+        }
+    }
+    return severity;
+}
+
+const char* rlsl_error_string(rlsl_error_enum_t error_code) {
+    const char* message = NULL;
+    switch(error_code) {
+        #define X(NAME, CODE, MESSAGE, SEVERITY) case CODE: { message = MESSAGE; break; }
+        RLSL_ERRORS(X)
+        #undef X
+        default: {
             message = "unknown error";
             break;
         }
     }
-
-    return (rlsl_error_t) {
-        .severity = severity,
-        .message = message,
-        .code = error_code,
-        .start = (*start),
-        .end = (*end)
-    };
+    return message;
 }
 
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier) {

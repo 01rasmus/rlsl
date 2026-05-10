@@ -13,7 +13,7 @@ typedef struct rlsl_vec_header_t {
 } rlsl_vec_header_t;
 
 #define rlsl_vec_push(VEC, ELEMENT) \
-    _rlsl_vec_push((void**)&VEC, (void*)&ELEMENT, sizeof(ELEMENT))
+    _rlsl_vec_push((void**)&VEC, (const void*)&ELEMENT, sizeof(ELEMENT))
 
 int64_t rlsl_vec_size(void* vec);
 void rlsl_vec_free(void* vec);

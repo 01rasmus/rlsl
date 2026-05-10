@@ -98,6 +98,34 @@ typedef enum rlsl_token_type_t {
     RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED,
 } rlsl_token_type_t;
 
+#define rlsl_token_create_static(TYPE, CURSOR_START, CURSOR_END)             (rlsl_token_t){ .type = (TYPE), .cursor_start = (CURSOR_START), .cursor_end = (CURSOR_END) }
+#define rlsl_token_create_int(INTEGER, OVERFLOW, CURSOR_START, CURSOR_END)   (rlsl_token_t){ \
+    .type = RLSL_TOKEN_LITERAL_INT, \
+    .cursor_start = (CURSOR_START), \
+    .cursor_end = (CURSOR_END), \
+    .value.num_int = { \
+        .value = (INTEGER), \
+        .overflow = (OVERFLOW) \
+    } \
+}
+
+#define rlsl_token_create_float(FLOAT, OVERFLOW, CURSOR_START, CURSOR_END)   (rlsl_token_t){ \
+    .type = RLSL_TOKEN_LITERAL_FLOAT, \
+    .cursor_start = (CURSOR_START), \
+    .cursor_end = (CURSOR_END), \
+    .value.num_float = { \
+        .value = (FLOAT), \
+        .overflow = (OVERFLOW) \
+    } \
+}
+
+#define rlsl_token_create_identifier(IDENT, CURSOR_START, CURSOR_END)   (rlsl_token_t){ \
+    .type = RLSL_TOKEN_LITERAL_IDENTIFIER, \
+    .cursor_start = (CURSOR_START), \
+    .cursor_end = (CURSOR_END), \
+    .value.identifier = (IDENT), \
+}
+
 typedef struct rlsl_token_t {
     rlsl_token_type_t type;
     rlsl_cursor_t cursor_start;
