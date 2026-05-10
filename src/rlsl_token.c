@@ -23,7 +23,7 @@ typedef struct rlsl_token_str_to_type_t {
     by alphabetical order, starting with
     the longest
 */
-static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
+static rlsl_token_str_to_type_t rlsl_token_keywords[] = {
     { .string = "uniform", .type = RLSL_TOKEN_KEYWORD_UNIFORM },
     { .string = "double", .type = RLSL_TOKEN_TYPE_DOUBLE },
     { .string = "mat2x2", .type = RLSL_TOKEN_TYPE_MAT2X2 },
@@ -68,8 +68,9 @@ static rlsl_token_str_to_type_t rlsl_token_static_matches[] = {
     { .string = "for", .type = RLSL_TOKEN_KEYWORD_FOR },
     { .string = "int", .type = RLSL_TOKEN_TYPE_INT },
     { .string = "if", .type = RLSL_TOKEN_KEYWORD_IF },
+};
 
-    //single character tokens
+static rlsl_token_str_to_type_t rlsl_token_single_char_tokens[] = {
     { .string = "-", .type = RLSL_TOKEN_SYMBOL_DASH },
     { .string = ",", .type = RLSL_TOKEN_SYMBOL_COMMA },
     { .string = ";", .type = RLSL_TOKEN_SYMBOL_SEMICOLON },
@@ -105,9 +106,10 @@ static const char* bin_substrings[] = { "0", "1" };
 */
 static rlsl_tokenizer_function_t tokenizer_functions[] = {
     _rlsl_token_tokenizer_parse_comment,
-    _rlsl_token_tokenizer_parse_space,
-    _rlsl_token_tokenizer_parse_static_token,
+    _rlsl_token_tokenizer_parse_keyword,
     _rlsl_token_tokenizer_parse_literal,
+    _rlsl_token_tokenizer_parse_space,
+    _rlsl_token_tokenizer_parse_single_char_token,
 };
 
 rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier) {
@@ -137,20 +139,23 @@ rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const ch
         //we will add it as an error, and continue
         //to check if there are more errors further down
         if(!added_token) {
-
+            rlsl_cursor_t next_cur = cursor;
+            rlsl_cursor_advance(&next_cur, source, 1);
+            rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_CHARACTER_IN_LIT_OR_IDENT, &cursor, &next_cur));
+            cursor = next_cur;
         }
 
-        if(source_length <= cursor.index) {
+        if(source_length <= cursor.index || source[cursor.index] == '\0') {
             break;
         }
     }
-
+    
     res->error_count = rlsl_vec_size(res->errors);
     res->token_count = rlsl_vec_size(res->tokens);
     return res;
 err:
     rlsl_tokenizer_result_free(res);
-    return res;
+    return NULL;
 }
 
 void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result) {
@@ -164,7 +169,6 @@ void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result) {
 
     rlsl_vec_free(result->tokens);
     rlsl_vec_free(result->errors);
-
     free(result);
 }
 
@@ -185,7 +189,7 @@ bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_res
     bool is_space = false;
     while(1) {
         const char character = source[cursor_current.index];
-        bool current_is_space = isspace(character);
+        bool current_is_space = isspace((uint8_t)character);
         if(current_is_space) {
             is_space = true;
         } else {
@@ -202,12 +206,33 @@ bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_res
     return is_space;
 }
 
-bool _rlsl_token_tokenizer_parse_static_token(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+bool _rlsl_token_tokenizer_parse_keyword(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     rlsl_cursor_t cursor_current = *cursor;
 
     bool found_token = false;
-    for(int32_t i = 0; i < sizeof(rlsl_token_static_matches) / sizeof(rlsl_token_str_to_type_t); i++) {
-        rlsl_token_str_to_type_t* stt = &rlsl_token_static_matches[i];
+    for(int32_t i = 0; i < sizeof(rlsl_token_keywords) / sizeof(rlsl_token_str_to_type_t); i++) {
+        rlsl_token_str_to_type_t* stt = &rlsl_token_keywords[i];
+        size_t token_string_length = strlen(stt->string);
+
+        if(strncmp(stt->string, source + cursor_current.index, strlen(stt->string)) == 0) {
+            if(rlsl_cursor_advance(&cursor_current, source, token_string_length) != token_string_length) {
+                break;
+            }
+            found_token = true;
+            rlsl_vec_push(res->tokens, rlsl_token_create_static(stt->type, (*cursor), cursor_current));
+            (*cursor) = cursor_current;
+            break;
+        }
+    }
+    return found_token;
+}
+
+bool _rlsl_token_tokenizer_parse_single_char_token(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+    rlsl_cursor_t cursor_current = *cursor;
+
+    bool found_token = false;
+    for(int32_t i = 0; i < sizeof(rlsl_token_single_char_tokens) / sizeof(rlsl_token_str_to_type_t); i++) {
+        rlsl_token_str_to_type_t* stt = &rlsl_token_single_char_tokens[i];
         size_t token_string_length = strlen(stt->string);
 
         if(strncmp(stt->string, source + cursor_current.index, strlen(stt->string)) == 0) {
@@ -225,6 +250,14 @@ bool _rlsl_token_tokenizer_parse_static_token(rlsl_cursor_t* cursor, rlsl_tokeni
 
 bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     rlsl_cursor_t cursor_current = (*cursor);
+
+    //we should first check if the character at the start even is valid as a number/identifier
+    const char first_char = source[cursor->index];
+    const char second_char = source[cursor->index + 1];
+    bool valid_first_char = isalnum((uint8_t)first_char) || first_char == '_' || (first_char == '.' && isdigit((uint8_t)second_char));
+    if(!valid_first_char) {
+        return false;
+    }
 
     char result[TOKEN_LITERAL_RESULT_SIZE] = { 0 };
     const char* integer_prefixes[] = { "0x", "0b" };
@@ -244,10 +277,22 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
         starts_with |= flag;
         rlsl_cursor_advance(&cursor_current, source, strlen(str));
-    } else if(isdigit(source[cursor_current.index])) {
+    } else if(isdigit((uint8_t)source[cursor_current.index])) {
         starts_with |= TOKEN_LITERAL_FLAG_DECIMAL;
-    } else if(isalpha(source[cursor_current.index])) {
+    } else if(isalpha((uint8_t)source[cursor_current.index])) {
         starts_with |= TOKEN_LITERAL_FLAG_LETTER;
+    } else if(first_char == '.' && isdigit((uint8_t)second_char)) {
+        char str[3] = {
+            first_char,
+            second_char,
+            '\0'
+        };
+        rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
+        contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL_POINT;
+        contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
+        starts_with |= TOKEN_LITERAL_FLAG_DECIMAL_POINT;
+        decimal_point_count++;
+        rlsl_cursor_advance(&cursor_current, source, strlen(str));
     }
 
     //check characters
@@ -262,7 +307,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
 
         const char current_char = source[cursor_current.index];
         const bool is_identifier = (contains_flags & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
-        const bool should_continue = isalnum(current_char) || current_char == '_' || (current_char == '.' && !is_identifier);
+        const bool should_continue = isalnum((uint8_t)current_char) || current_char == '_' || (current_char == '.' && !is_identifier);
         if(!should_continue) {
             break;
         }
@@ -287,8 +332,8 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             contains_flags |= TOKEN_LITERAL_FLAG_BINARY;
             continue;
         }
-        
-        if(isalpha(current_char) || current_char == '_') {
+
+        if(isalpha((uint8_t)current_char) || current_char == '_') {
             temp[0] = current_char;
             str = temp;
             contains_flags |= TOKEN_LITERAL_FLAG_LETTER;
@@ -319,6 +364,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     if(contains_flags & TOKEN_LITERAL_FLAG_DECIMAL_POINT) {
         uint64_t starts_with_hex = starts_with == TOKEN_LITERAL_FLAG_HEX;
         uint64_t starts_with_dec = starts_with == TOKEN_LITERAL_FLAG_DECIMAL;
+        uint64_t starts_with_decimal_point = starts_with == TOKEN_LITERAL_FLAG_DECIMAL_POINT;
         uint64_t starts_with_bin = starts_with ==  TOKEN_LITERAL_FLAG_BINARY;
         uint64_t starts_with_let = (starts_with & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
         uint64_t contains_hex = (contains_flags & TOKEN_LITERAL_FLAG_HEX) == TOKEN_LITERAL_FLAG_HEX;
@@ -334,7 +380,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
             rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_FLOAT_TOO_MANY_DECIMAL_POINTS, cursor, &cursor_current));
             goto done;
         }
-        if(!starts_with_dec || starts_with == 0 || contains_hex) {
+        if(!(starts_with_dec || starts_with_decimal_point) || starts_with == 0 || contains_hex) {
             rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_FLOAT_IS_NOT_DECIMAL, cursor, &cursor_current));
             goto done;
         }

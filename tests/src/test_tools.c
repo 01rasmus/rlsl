@@ -51,6 +51,7 @@ bool _expect_tokens(const char* source, const expect_token_t* expects, size_t ex
             }
         }
     }
+    rlsl_tokenizer_result_free(res);
     return true;
 fail:
     rlsl_tokenizer_result_free(res);
@@ -70,6 +71,7 @@ bool expect_error(const char* source, const rlsl_error_enum_t error, uint64_t st
     rlsl_error_t err = res->errors[0];
     bool success = err.code == error && err.start.line == start_line && err.start.column == start_column && err.end.line == end_line && err.end.column == end_column;
     if(success) {
+        rlsl_tokenizer_result_free(res);
         return true;
     }
 fail:

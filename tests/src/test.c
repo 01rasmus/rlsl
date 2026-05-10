@@ -115,9 +115,13 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_number_integer_operators_with_space),
     TEST_REGISTRATION(test_token_number_integer_operators_with_new_line),
     TEST_REGISTRATION(test_token_number_integer_operators_with_tab),
+    TEST_REGISTRATION(test_token_number_float_with_decimal_point_at_start),
 
     TEST_REGISTRATION(test_token_identifier),
     TEST_REGISTRATION(test_token_identifier_address_sequence),
+    TEST_REGISTRATION(test_token_identifier_with_digits),
+    TEST_REGISTRATION(test_token_identifier_with_digits_and_underscore),
+    TEST_REGISTRATION(test_token_identifier_ensure_error_invalid_character),
 
     TEST_REGISTRATION(test_token_comment_simple),
     TEST_REGISTRATION(test_token_comment_c_style),
@@ -150,6 +154,6 @@ int32_t main() {
         printf(PRINTF_COL_GREEN PRINTF_COL_BOLD);
     }
 
-    printf("\nPassed %llu tests, and failed %llu\n" PRINTF_COL_RESET, passed, failed);
+    printf("\nPassed %llu, and failed %llu\n" PRINTF_COL_RESET, passed, failed);
     return failed;
 }

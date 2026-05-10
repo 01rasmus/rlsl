@@ -159,3 +159,7 @@ bool test_token_number_integer_operators_with_tab() {
     };
     return expect_tokens("100 *\t 200", tokens);
 }
+
+bool test_token_number_float_with_decimal_point_at_start() {
+    return expect_token(".4", EXPECT_TOKEN_FLOAT(0.4));
+}
