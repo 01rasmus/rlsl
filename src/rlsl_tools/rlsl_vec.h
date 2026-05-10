@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define RLSL_VEC_HEADER(VEC)                (VEC ? (((uintptr_t)VEC) - sizeof(rlsl_vec_header_t)) : NULL)
+#define RLSL_VEC_HEADER(VEC)                (VEC ? (void*)(((uintptr_t)VEC) - sizeof(rlsl_vec_header_t)) : NULL)
 #define RLSL_VEC_ARRAY_PTR(HEADER)          (HEADER ? (void*)(((uintptr_t)HEADER) + sizeof(rlsl_vec_header_t)) : NULL)
 #define RLSL_VEC_INITIAL_CAPACITY           16
 

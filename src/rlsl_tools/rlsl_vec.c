@@ -60,7 +60,7 @@ void _rlsl_vec_push(void** vec, const void* element, size_t element_size) {
     rlsl_vec_header_t* header = RLSL_VEC_HEADER(v);
     
     ptrdiff_t offset = header->size * element_size;
-    memcpy((uintptr_t)v + offset, element, element_size);
+    memcpy((void*)((uintptr_t)v + offset), element, element_size);
     header->size++;
     (*vec) = v;
 }
