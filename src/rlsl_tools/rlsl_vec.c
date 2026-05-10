@@ -22,7 +22,7 @@ static void* _rlsl_vec_init(size_t element_size) {
     header->capacity = RLSL_VEC_INITIAL_CAPACITY;
     header->size = 0;
     header->element_size = element_size;
-    return (uintptr_t)mem + sizeof(rlsl_vec_header_t);
+    return RLSL_VEC_POINTER_ADD(mem, sizeof(rlsl_vec_header_t));
 }
 
 static void* _rlsl_vec_realloc(void* vec, size_t needed_size) {
@@ -44,7 +44,7 @@ static void* _rlsl_vec_realloc(void* vec, size_t needed_size) {
     header = (rlsl_vec_header_t*)new_mem;
     header->capacity = new_cap;
 
-    return (uintptr_t)new_mem + sizeof(rlsl_vec_header_t);
+    return RLSL_VEC_POINTER_ADD(new_mem, sizeof(rlsl_vec_header_t));
 }
 
 void _rlsl_vec_push(void** vec, const void* element, size_t element_size) {
@@ -58,7 +58,7 @@ void _rlsl_vec_push(void** vec, const void* element, size_t element_size) {
     rlsl_vec_header_t* header = RLSL_VEC_HEADER(v);
 
     size_t offset = header->size * element_size;
-    memcpy((uintptr_t)v + offset, element, element_size);
+    memcpy(RLSL_VEC_POINTER_ADD(v, offset), element, element_size);
     header->size++;
     (*vec) = v;
 }
