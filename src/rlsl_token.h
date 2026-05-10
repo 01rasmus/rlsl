@@ -123,7 +123,8 @@ typedef struct rlsl_tokenizer_result_t {
     rlsl_error_t* errors;
 } rlsl_tokenizer_result_t;
 
-rlsl_tokenizer_result_t rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier);
+rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier);
+void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result);
 void rlsl_token_free(rlsl_token_t* token);
 
 typedef bool (*rlsl_tokenizer_function_t)(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);

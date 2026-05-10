@@ -98,13 +98,6 @@ static const char* hex_substrings[] = { "A", "B", "C", "D", "E", "F", "a", "b", 
 static const char* dec_substrings[] = { "2", "3", "4", "5", "6", "7", "8", "9" };
 static const char* bin_substrings[] = { "0", "1" };
 
-void rlsl_token_free(rlsl_token_t* token) {
-    switch(token->type) {
-        default:
-            break;
-    }
-}
-
 /*
     list of tokenizer functions.
     the order of these functions are important
@@ -117,13 +110,16 @@ static rlsl_tokenizer_function_t tokenizer_functions[] = {
     _rlsl_token_tokenizer_parse_literal,
 };
 
-rlsl_tokenizer_result_t rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier) {
-    rlsl_tokenizer_result_t res = (rlsl_tokenizer_result_t){
-        .error_count = 0,
-        .token_count = 0,
-        .errors = NULL,
-        .tokens = NULL,
-    };
+rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier) {
+    rlsl_tokenizer_result_t* res = malloc(sizeof(rlsl_tokenizer_result_t));
+    if(!res) {
+        goto err;
+    }
+
+    res->error_count = 0;
+    res->token_count = 0;
+    res->errors = NULL;
+    res->tokens = NULL;
 
     rlsl_cursor_t cursor = rlsl_cursor_create();
     size_t source_length = strlen(source);
@@ -131,7 +127,7 @@ rlsl_tokenizer_result_t rlsl_token_tokenize_string(const char* source, const cha
         bool added_token = false;
         for(int32_t i = 0; i < sizeof(tokenizer_functions) / sizeof(rlsl_tokenizer_function_t); i++) {
             rlsl_tokenizer_function_t tokenizer = tokenizer_functions[i];
-            if(tokenizer(&cursor, &res, source, compile_unit_identifier)) {
+            if(tokenizer(&cursor, res, source, compile_unit_identifier)) {
                 added_token = true;
                 break;
             }
@@ -149,15 +145,38 @@ rlsl_tokenizer_result_t rlsl_token_tokenize_string(const char* source, const cha
         }
     }
 
-    res.error_count = rlsl_vec_size(res.errors);
-    res.token_count = rlsl_vec_size(res.tokens);
+    res->error_count = rlsl_vec_size(res->errors);
+    res->token_count = rlsl_vec_size(res->tokens);
     return res;
 err:
-    rlsl_vec_free(res.errors);
-    rlsl_vec_free(res.tokens);
-    res.errors = NULL;
-    res.tokens = NULL;
+    rlsl_tokenizer_result_free(res);
     return res;
+}
+
+void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result) {
+    if(!result) {
+        return;
+    }
+    
+    for(int64_t i = 0; i < rlsl_vec_size(result->tokens); i++) {
+        rlsl_token_free(&result->tokens[i]);
+    }
+
+    rlsl_vec_free(result->tokens);
+    rlsl_vec_free(result->errors);
+
+    free(result);
+}
+
+void rlsl_token_free(rlsl_token_t* token) {
+    switch(token->type) {
+        case RLSL_TOKEN_LITERAL_IDENTIFIER: {
+            free(token->value.identifier);
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
