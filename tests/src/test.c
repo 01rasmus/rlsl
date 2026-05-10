@@ -150,6 +150,6 @@ int32_t main() {
         printf(PRINTF_COL_GREEN PRINTF_COL_BOLD);
     }
 
-    printf("\nPassed %llu tests, and failed %llu\n", passed, failed);
+    printf("\nPassed %llu tests, and failed %llu\n" PRINTF_COL_RESET, passed, failed);
     return failed;
 }

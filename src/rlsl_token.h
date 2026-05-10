@@ -3,6 +3,8 @@
 #include "rlsl_cursor.h"
 #include "rlsl_error.h"
 
+#define TOKEN_LITERAL_RESULT_SIZE           2048
+
 #define TOKEN_LITERAL_FLAG_BINARY           0x1
 #define TOKEN_LITERAL_FLAG_DECIMAL          (0x2 | TOKEN_LITERAL_FLAG_BINARY)
 #define TOKEN_LITERAL_FLAG_HEX              (0x4 | TOKEN_LITERAL_FLAG_DECIMAL)

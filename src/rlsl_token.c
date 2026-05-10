@@ -217,8 +217,7 @@ bool _rlsl_token_tokenizer_parse_static_tokens(rlsl_cursor_t* cursor, rlsl_token
 bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     rlsl_cursor_t cursor_current = (*cursor);
 
-    const size_t result_size = 2048;
-    char result[result_size] = { 0 };
+    char result[TOKEN_LITERAL_RESULT_SIZE] = { 0 };
     const char* integer_prefixes[] = { "0x", "0b" };
     const uint64_t integer_prefix_flags[] = { TOKEN_LITERAL_FLAG_HEX, TOKEN_LITERAL_FLAG_BINARY };
 
@@ -233,10 +232,10 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     if(suffix_index != -1) {
         const char* str = integer_prefixes[suffix_index];
         uint64_t flag = integer_prefix_flags[suffix_index];
-        rlsl_str_cat(result, result_size, str);
+        rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
         starts_with |= flag;
         rlsl_cursor_advance(&cursor_current, source, strlen(str));
-    } else if(isnumber(source[cursor_current.index])) {
+    } else if(isdigit(source[cursor_current.index])) {
         starts_with |= TOKEN_LITERAL_FLAG_DECIMAL;
     } else if(isalpha(source[cursor_current.index])) {
         starts_with |= TOKEN_LITERAL_FLAG_LETTER;
@@ -247,7 +246,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     char temp[2] = { 0 };
     while(true) {
         if(str) {
-            rlsl_str_cat(result, result_size, str);
+            rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
             rlsl_cursor_advance(&cursor_current, source, strlen(str));
             str = NULL;
         }

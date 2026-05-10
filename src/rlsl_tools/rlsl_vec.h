@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define RLSL_VEC_HEADER(VEC)            (rlsl_vec_header_t*)(VEC - sizeof(rlsl_vec_header_t))
+#define RLSL_VEC_HEADER(VEC)            (rlsl_vec_header_t*)((uintptr_t)VEC - sizeof(rlsl_vec_header_t))
 #define RLSL_VEC_INITIAL_CAPACITY       1
 
 typedef struct rlsl_vec_header_t {
