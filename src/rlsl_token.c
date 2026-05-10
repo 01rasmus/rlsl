@@ -111,9 +111,9 @@ void rlsl_token_free(rlsl_token_t* token) {
     and should not be changed
 */
 static rlsl_tokenizer_function_t tokenizer_functions[] = {
-    _rlsl_token_tokenizer_parse_comments,
+    _rlsl_token_tokenizer_parse_comment,
     _rlsl_token_tokenizer_parse_space,
-    _rlsl_token_tokenizer_parse_static_tokens,
+    _rlsl_token_tokenizer_parse_static_token,
     _rlsl_token_tokenizer_parse_literal,
 };
 
@@ -188,7 +188,7 @@ bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_res
     return is_space;
 }
 
-bool _rlsl_token_tokenizer_parse_static_tokens(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+bool _rlsl_token_tokenizer_parse_static_token(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     rlsl_cursor_t cursor_current = *cursor;
 
     bool found_token = false;
@@ -448,7 +448,7 @@ done:
     return true;
 }
 #include <stdio.h>
-bool _rlsl_token_tokenizer_parse_comments(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
+bool _rlsl_token_tokenizer_parse_comment(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier) {
     const char* str = source + cursor->index;
     const char* end = NULL;
     bool is_comment = false;
