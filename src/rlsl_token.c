@@ -24,8 +24,8 @@ typedef struct rlsl_token_str_to_type_t {
     the longest
 */
 static rlsl_token_str_to_type_t rlsl_token_keywords[] = {
+    { .string = "mediump", .type = RLSL_TOKEN_TYPE_PRECISION_MEDIUMP },
     { .string = "uniform", .type = RLSL_TOKEN_KEYWORD_UNIFORM },
-    { .string = "double", .type = RLSL_TOKEN_TYPE_DOUBLE },
     { .string = "mat2x2", .type = RLSL_TOKEN_TYPE_MAT2X2 },
     { .string = "mat2x3", .type = RLSL_TOKEN_TYPE_MAT2X3 },
     { .string = "mat2x4", .type = RLSL_TOKEN_TYPE_MAT2X4 },
@@ -42,11 +42,9 @@ static rlsl_token_str_to_type_t rlsl_token_keywords[] = {
     { .string = "bvec3", .type = RLSL_TOKEN_TYPE_BVEC3 },
     { .string = "bvec4", .type = RLSL_TOKEN_TYPE_BVEC4 },
     { .string = "const", .type = RLSL_TOKEN_KEYWORD_CONST },
-    { .string = "dvec2", .type = RLSL_TOKEN_TYPE_DVEC2 },
-    { .string = "dvec3", .type = RLSL_TOKEN_TYPE_DVEC3 },
-    { .string = "dvec4", .type = RLSL_TOKEN_TYPE_DVEC4 },
     { .string = "false", .type = RLSL_TOKEN_LITERAL_FALSE },
     { .string = "float", .type = RLSL_TOKEN_TYPE_FLOAT },
+    { .string = "highp", .type = RLSL_TOKEN_TYPE_PRECISION_HIGHP },
     { .string = "input", .type = RLSL_TOKEN_KEYWORD_INPUT },
     { .string = "ivec2", .type = RLSL_TOKEN_TYPE_IVEC2 },
     { .string = "ivec3", .type = RLSL_TOKEN_TYPE_IVEC3 },
@@ -57,6 +55,7 @@ static rlsl_token_str_to_type_t rlsl_token_keywords[] = {
     { .string = "while", .type = RLSL_TOKEN_KEYWORD_WHILE },
     { .string = "bool", .type = RLSL_TOKEN_TYPE_BOOL },
     { .string = "else", .type = RLSL_TOKEN_KEYWORD_ELSE },
+    { .string = "lowp", .type = RLSL_TOKEN_TYPE_PRECISION_LOWP },
     { .string = "mat2", .type = RLSL_TOKEN_TYPE_MAT2 },
     { .string = "mat3", .type = RLSL_TOKEN_TYPE_MAT3 },
     { .string = "mat4", .type = RLSL_TOKEN_TYPE_MAT4 },
@@ -65,6 +64,7 @@ static rlsl_token_str_to_type_t rlsl_token_keywords[] = {
     { .string = "vec2", .type = RLSL_TOKEN_TYPE_VEC2 },
     { .string = "vec3", .type = RLSL_TOKEN_TYPE_VEC3 },
     { .string = "vec4", .type = RLSL_TOKEN_TYPE_VEC4 },
+    { .string = "void", .type = RLSL_TOKEN_TYPE_VOID },
     { .string = "for", .type = RLSL_TOKEN_KEYWORD_FOR },
     { .string = "int", .type = RLSL_TOKEN_TYPE_INT },
     { .string = "if", .type = RLSL_TOKEN_KEYWORD_IF },

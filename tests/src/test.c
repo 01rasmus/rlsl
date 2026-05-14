@@ -19,7 +19,6 @@ typedef struct test_registration_t {
 } test_registration_t;
 
 test_registration_t tests[] = {
-    TEST_REGISTRATION(test_token_static_double),
     TEST_REGISTRATION(test_token_static_uniform),
     TEST_REGISTRATION(test_token_static_input),
     TEST_REGISTRATION(test_token_static_output),
@@ -38,9 +37,10 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_static_bvec3),
     TEST_REGISTRATION(test_token_static_bvec4),
     TEST_REGISTRATION(test_token_static_const),
-    TEST_REGISTRATION(test_token_static_dvec2),
-    TEST_REGISTRATION(test_token_static_dvec3),
-    TEST_REGISTRATION(test_token_static_dvec4),
+    TEST_REGISTRATION(test_token_static_void),
+    TEST_REGISTRATION(test_token_static_lowp),
+    TEST_REGISTRATION(test_token_static_mediump),
+    TEST_REGISTRATION(test_token_static_highp),
     TEST_REGISTRATION(test_token_static_false),
     TEST_REGISTRATION(test_token_static_float),
     TEST_REGISTRATION(test_token_static_ivec2),

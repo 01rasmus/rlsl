@@ -1,10 +1,6 @@
 #include <rlsl_token.h>
 #include "test_tools.h"
 
-bool test_token_static_double() {
-    return expect_token("double", EXPECT_TOKEN(RLSL_TOKEN_TYPE_DOUBLE));
-}
-
 bool test_token_static_uniform() {
     return expect_token("uniform", EXPECT_TOKEN(RLSL_TOKEN_KEYWORD_UNIFORM));
 }
@@ -77,20 +73,24 @@ bool test_token_static_const() {
     return expect_token("const", EXPECT_TOKEN(RLSL_TOKEN_KEYWORD_CONST));
 }
 
-bool test_token_static_dvec2() {
-    return expect_token("dvec2", EXPECT_TOKEN(RLSL_TOKEN_TYPE_DVEC2));
-}
-
-bool test_token_static_dvec3() {
-    return expect_token("dvec3", EXPECT_TOKEN(RLSL_TOKEN_TYPE_DVEC3));
-}
-
-bool test_token_static_dvec4() {
-    return expect_token("dvec4", EXPECT_TOKEN(RLSL_TOKEN_TYPE_DVEC4));
-}
-
 bool test_token_static_false() {
     return expect_token("false", EXPECT_TOKEN(RLSL_TOKEN_LITERAL_FALSE));
+}
+
+bool test_token_static_void() {
+    return expect_token("void", EXPECT_TOKEN(RLSL_TOKEN_TYPE_VOID));
+}
+
+bool test_token_static_lowp() {
+    return expect_token("lowp", EXPECT_TOKEN(RLSL_TOKEN_TYPE_PRECISION_LOWP));
+}
+
+bool test_token_static_mediump() {
+    return expect_token("mediump", EXPECT_TOKEN(RLSL_TOKEN_TYPE_PRECISION_MEDIUMP));
+}
+
+bool test_token_static_highp() {
+    return expect_token("highp", EXPECT_TOKEN(RLSL_TOKEN_TYPE_PRECISION_HIGHP));
 }
 
 bool test_token_static_float() {
