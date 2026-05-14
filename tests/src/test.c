@@ -8,6 +8,7 @@
 #include "tests_token_numbers.h"
 #include "tests_token_identifier.h"
 #include "tests_token_comments.h"
+#include "tests_ast_struct.h"
 
 #define TEST_REGISTRATION(TEST) { .name = #TEST, .function = TEST }
 
@@ -22,46 +23,17 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_static_uniform),
     TEST_REGISTRATION(test_token_static_input),
     TEST_REGISTRATION(test_token_static_output),
-    TEST_REGISTRATION(test_token_static_mat2x2),
-    TEST_REGISTRATION(test_token_static_mat2x3),
-    TEST_REGISTRATION(test_token_static_mat2x4),
-    TEST_REGISTRATION(test_token_static_mat3x2),
-    TEST_REGISTRATION(test_token_static_mat3x3),
-    TEST_REGISTRATION(test_token_static_mat3x4),
-    TEST_REGISTRATION(test_token_static_mat4x2),
-    TEST_REGISTRATION(test_token_static_mat4x3),
-    TEST_REGISTRATION(test_token_static_mat4x4),
     TEST_REGISTRATION(test_token_static_return),
     TEST_REGISTRATION(test_token_static_struct),
-    TEST_REGISTRATION(test_token_static_bvec2),
-    TEST_REGISTRATION(test_token_static_bvec3),
-    TEST_REGISTRATION(test_token_static_bvec4),
     TEST_REGISTRATION(test_token_static_const),
-    TEST_REGISTRATION(test_token_static_void),
     TEST_REGISTRATION(test_token_static_lowp),
     TEST_REGISTRATION(test_token_static_mediump),
     TEST_REGISTRATION(test_token_static_highp),
     TEST_REGISTRATION(test_token_static_false),
-    TEST_REGISTRATION(test_token_static_float),
-    TEST_REGISTRATION(test_token_static_ivec2),
-    TEST_REGISTRATION(test_token_static_ivec3),
-    TEST_REGISTRATION(test_token_static_ivec4),
-    TEST_REGISTRATION(test_token_static_uvec2),
-    TEST_REGISTRATION(test_token_static_uvec3),
-    TEST_REGISTRATION(test_token_static_uvec4),
     TEST_REGISTRATION(test_token_static_while),
-    TEST_REGISTRATION(test_token_static_bool),
     TEST_REGISTRATION(test_token_static_else),
-    TEST_REGISTRATION(test_token_static_mat2),
-    TEST_REGISTRATION(test_token_static_mat3),
-    TEST_REGISTRATION(test_token_static_mat4),
     TEST_REGISTRATION(test_token_static_true),
-    TEST_REGISTRATION(test_token_static_uint),
-    TEST_REGISTRATION(test_token_static_vec2),
-    TEST_REGISTRATION(test_token_static_vec3),
-    TEST_REGISTRATION(test_token_static_vec4),
     TEST_REGISTRATION(test_token_static_for),
-    TEST_REGISTRATION(test_token_static_int),
     TEST_REGISTRATION(test_token_static_if),
     TEST_REGISTRATION(test_token_static_dash),
     TEST_REGISTRATION(test_token_static_comma),
@@ -130,6 +102,8 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_comment_with_variable_declaration_after_c_styled),
     TEST_REGISTRATION(test_token_comment_with_c_styled_start_token_in_simple),
     TEST_REGISTRATION(test_token_comment_with_c_styled_end_token_in_simple),
+
+    TEST_REGISTRATION(test_ast_struct),
 };
 
 int32_t main() {

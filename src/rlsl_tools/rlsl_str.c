@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "rlsl_str.h"
 
 int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count) {
@@ -36,4 +37,13 @@ size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src) {
     }
 
     return dest_length + src_length;
+}
+
+char* str_cpy(const char* string) {
+    size_t length = strlen(string) + 1;
+    char* new_string = (char*)malloc(length);
+    if(new_string) {
+        memcpy(new_string, string, length);
+    }
+    return new_string;
 }

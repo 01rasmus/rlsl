@@ -17,7 +17,7 @@ bool test_token_comment_c_style_without_close() {
 bool test_token_comment_with_variable_declaration_after_simple() {
     expect_token_t tokens[] = {
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_COMMENT),
-        EXPECT_TOKEN(RLSL_TOKEN_TYPE_FLOAT),
+        EXPECT_TOKEN_IDENT("float"),
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
         EXPECT_TOKEN_IDENT("test"),
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
@@ -32,7 +32,7 @@ bool test_token_comment_with_variable_declaration_after_simple() {
 bool test_token_comment_with_variable_declaration_after_c_styled() {
     expect_token_t tokens[] = {
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_COMMENT),
-        EXPECT_TOKEN(RLSL_TOKEN_TYPE_FLOAT),
+        EXPECT_TOKEN_IDENT("float"),
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),
         EXPECT_TOKEN_IDENT("test"),
         EXPECT_TOKEN(RLSL_TOKEN_SYMBOL_SPACE),

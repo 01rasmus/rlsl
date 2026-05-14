@@ -42,4 +42,11 @@
 */
 size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src);
 
+/*
+    makes a copy of a string
+    on the heap. needs to
+    manually be freed with "free"
+*/
+char* str_cpy(const char* string);
+
 int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count);
