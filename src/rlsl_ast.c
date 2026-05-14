@@ -110,7 +110,6 @@ bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_membe
     out_struct_member->type = str_cpy(type_token->value.identifier);
     out_struct_member->start = first_token->cursor_start;
     out_struct_member->end = name_token->cursor_end;
-    printf("Member: %s %s;\n", out_struct_member->type, out_struct_member->name);
     return true;
 err:
     rlsl_ast_struct_member_free(out_struct_member);
