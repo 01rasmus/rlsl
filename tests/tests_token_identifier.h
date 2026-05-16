@@ -19,6 +19,10 @@ bool test_token_identifier_with_digits() {
     return expect_token("test1234", EXPECT_TOKEN_IDENT("test1234"));
 }
 
+bool test_token_identifier_with_keyword() {
+    return expect_token("returnValue", EXPECT_TOKEN_IDENT("returnValue"));
+}
+
 bool test_token_identifier_with_digits_and_underscore() {
     return expect_token("_test1234", EXPECT_TOKEN_IDENT("_test1234"));
 }

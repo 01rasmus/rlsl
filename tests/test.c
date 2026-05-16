@@ -92,6 +92,7 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_identifier),
     TEST_REGISTRATION(test_token_identifier_address_sequence),
     TEST_REGISTRATION(test_token_identifier_with_digits),
+    TEST_REGISTRATION(test_token_identifier_with_keyword),
     TEST_REGISTRATION(test_token_identifier_with_digits_and_underscore),
     TEST_REGISTRATION(test_token_identifier_ensure_error_invalid_character),
 

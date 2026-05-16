@@ -6,8 +6,7 @@
 #include "rlsl_token.h"
 
 #include "rlsl_token_tokenizer_comment.h"
-#include "rlsl_token_tokenizer_keyword.h"
-#include "rlsl_token_tokenizer_literal.h"
+#include "rlsl_token_tokenizer_literal_and_keyword.h"
 #include "rlsl_token_tokenizer_space.h"
 #include "rlsl_token_tokenizer_single_char.h"
 
@@ -18,8 +17,7 @@
 */
 static rlsl_tokenizer_function_t tokenizer_functions[] = {
     rlsl_token_tokenizer_parse_comment,
-    rlsl_token_tokenizer_parse_keyword,
-    rlsl_token_tokenizer_parse_literal,
+    rlsl_token_tokenizer_parse_literal_and_keyword,
     rlsl_token_tokenizer_parse_space,
     rlsl_token_tokenizer_parse_single_char_token,
 };
