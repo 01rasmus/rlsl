@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tools/rlsl_str.h"
+#include "token/rlsl_token.h"
 #include "rlsl_error.h"
+
+#define TEMP_STRING_LENGTH  32768
+static char temp_string[TEMP_STRING_LENGTH] = { 0 };
 
 rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t start, rlsl_cursor_t end, const char* format, ...) {
     rlsl_error_t error = (rlsl_error_t) {
@@ -27,6 +32,41 @@ rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t sta
     vsnprintf(error.dynamic_message, size, format, args_copy);
     va_end(args_copy);
     return error;
+}
+
+rlsl_error_t rlsl_error_create_from_expected_tokens(rlsl_cursor_t start, rlsl_cursor_t end, rlsl_token_type_t got_token_type, rlsl_token_type_t* expected_tokens, int64_t expected_tokens_count) {
+    
+    strcpy(temp_string, "expected token");
+    for(int64_t i = 0; i < expected_tokens_count; i++) {
+        rlsl_token_type_t expected_token = expected_tokens[i];
+
+        if(i == expected_tokens_count - 1) {
+            rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, " or \"");
+        } else {
+            rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, " \"");
+        }
+        
+        rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, rlsl_token_type_to_string(expected_token));
+
+        if(i >= expected_tokens_count - 2) {
+            rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, "\"");
+        } else {
+            rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, "\",");
+        }
+    }
+    rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, " but got \"");
+    rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, rlsl_token_type_to_string(got_token_type));
+    rlsl_str_cat(temp_string, TEMP_STRING_LENGTH, "\"");
+
+    return (rlsl_error_t) {
+        .code = RLSL_ERROR_EXPECTED_TOKEN,
+        .start = start,
+        .end = end,
+        .message = NULL,
+        .dynamic_message = rlsl_str_cpy(temp_string),
+        .message_is_static = false,
+        .severity = RLSL_SEVERITY_ERROR,
+    };
 }
 
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code) {

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "rlsl_str.h"
 
-int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count) {
+int32_t _rlsl_str_starts_with_any_of(const char* src, const char** substrings, int32_t substring_count) {
     for(int32_t i = 0; i < substring_count; i++) {
         const char* substring = substrings[i];
         size_t length = strlen(substring);
@@ -39,7 +39,7 @@ size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src) {
     return dest_length + src_length;
 }
 
-char* str_cpy(const char* string) {
+char* rlsl_str_cpy(const char* string) {
     size_t length = strlen(string) + 1;
     char* new_string = (char*)malloc(length);
     if(new_string) {

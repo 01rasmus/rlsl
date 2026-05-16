@@ -17,6 +17,7 @@
     X(FLOAT_HAS_TWO_LEADING_ZEROS,          0x10007,    "floating point has two leading zeros",         RLSL_SEVERITY_ERROR) \
     X(DECIMAL_LEADING_ZERO,                 0x10008,    "decimal number has a leading zero",            RLSL_SEVERITY_ERROR) \
     X(EXPECTED_TOKEN,                       0x10009,    NULL,                                           RLSL_SEVERITY_ERROR) \
+    X(END_OF_TOKEN_STREAM,                  0x1000A,    "expected a token but is at end of stream",     RLSL_SEVERITY_ERROR) \
 
 #define rlsl_error_create(ERROR_CODE, START, END) \
     (rlsl_error_t) { \
@@ -38,6 +39,8 @@ typedef enum rlsl_error_enum_t {
     #undef X
 } rlsl_error_enum_t;
 
+typedef enum rlsl_token_type_t rlsl_token_type_t;
+
 typedef struct rlsl_error_t {
     const char* message;
     char* dynamic_message;
@@ -48,6 +51,7 @@ typedef struct rlsl_error_t {
     rlsl_cursor_t end;
 } rlsl_error_t;
 
+rlsl_error_t rlsl_error_create_from_expected_tokens(rlsl_cursor_t start, rlsl_cursor_t end, rlsl_token_type_t got_token_type, rlsl_token_type_t* expected_tokens, int64_t expected_tokens_count);
 rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t start, rlsl_cursor_t end, const char* format, ...);
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code);
 const char* rlsl_error_string(rlsl_error_enum_t error_code);

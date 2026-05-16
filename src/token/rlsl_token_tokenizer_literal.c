@@ -35,7 +35,7 @@ bool rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_re
     bool has_letter = false;
 
     //check if it starts with one of the integer suffixes
-    int32_t suffix_index = rlsl_str_starts_with_any(source + cursor_current.index, integer_prefixes);
+    int32_t suffix_index = rlsl_str_starts_with_any_of(source + cursor_current.index, integer_prefixes);
     if(suffix_index != -1) {
         const char* str = integer_prefixes[suffix_index];
         uint64_t flag = integer_prefix_flags[suffix_index];
@@ -77,21 +77,21 @@ bool rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_re
             break;
         }
 
-        int32_t hex_index = rlsl_str_starts_with_any(source + cursor_current.index, hex_substrings);
+        int32_t hex_index = rlsl_str_starts_with_any_of(source + cursor_current.index, hex_substrings);
         if(hex_index != -1) {
             str = hex_substrings[hex_index];
             contains_flags |= TOKEN_LITERAL_FLAG_HEX;
             continue;
         }
 
-        int32_t dec_index = rlsl_str_starts_with_any(source + cursor_current.index, dec_substrings);
+        int32_t dec_index = rlsl_str_starts_with_any_of(source + cursor_current.index, dec_substrings);
         if(dec_index != -1) {
             str = dec_substrings[dec_index];
             contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
             continue;
         }
 
-        int32_t bin_index = rlsl_str_starts_with_any(source + cursor_current.index, bin_substrings);
+        int32_t bin_index = rlsl_str_starts_with_any_of(source + cursor_current.index, bin_substrings);
         if(bin_index != -1) {
             str = bin_substrings[bin_index];
             contains_flags |= TOKEN_LITERAL_FLAG_BINARY;
@@ -179,7 +179,7 @@ bool rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_re
                 break;
             }
 
-            uint64_t which = rlsl_str_starts_with_any(result + i, integer_prefixes);
+            uint64_t which = rlsl_str_starts_with_any_of(result + i, integer_prefixes);
             if(which == 0) {
                 rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_INVALID_HEXADECIMAL_NUMBER, cursor, &cursor_current));
                 goto done;

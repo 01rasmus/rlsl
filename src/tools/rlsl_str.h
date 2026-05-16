@@ -25,8 +25,8 @@
     On success, it returns the index of the matched substring
     in the array. On error, it returns -1.
 */
-#define rlsl_str_starts_with_any(SRC, SUBSTRINGS) \
-    _rlsl_str_starts_with_any(SRC, SUBSTRINGS, sizeof(SUBSTRINGS) / sizeof(const char*))
+#define rlsl_str_starts_with_any_of(SRC, SUBSTRINGS) \
+    _rlsl_str_starts_with_any_of(SRC, SUBSTRINGS, sizeof(SUBSTRINGS) / sizeof(const char*))
 
 /*
     Concatenates two strings. It will
@@ -47,6 +47,6 @@ size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src);
     on the heap. needs to
     manually be freed with "free"
 */
-char* str_cpy(const char* string);
+char* rlsl_str_cpy(const char* string);
 
-int32_t _rlsl_str_starts_with_any(const char* src, const char** substrings, int32_t substring_count);
+int32_t _rlsl_str_starts_with_any_of(const char* src, const char** substrings, int32_t substring_count);

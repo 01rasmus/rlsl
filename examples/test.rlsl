@@ -1,0 +1,9 @@
+struct test {
+    float const;
+    vec3 b;
+};
+
+struct test2 {
+    highp2 float a;
+    vec3 b;
+};
