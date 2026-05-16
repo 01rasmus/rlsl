@@ -1,6 +1,6 @@
 #include <string.h>
-#include "rlsl_tools/rlsl_vec.h"
-#include "rlsl_tools/rlsl_str.h"
+#include "tools/rlsl_vec.h"
+#include "tools/rlsl_str.h"
 #include "rlsl_token_stream.h"
 #include "rlsl_ast.h"
 

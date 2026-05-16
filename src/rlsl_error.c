@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "rlsl_tools/rlsl_str.h"
+#include "tools/rlsl_str.h"
 #include "rlsl_error.h"
 
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code) {
