@@ -54,6 +54,7 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
     }
 
     char result[TOKEN_LITERAL_RESULT_SIZE] = { 0 };
+    size_t result_size = 0;
     const char* integer_prefixes[] = { "0x", "0b" };
     const uint64_t integer_prefix_flags[] = { TOKEN_LITERAL_FLAG_HEX, TOKEN_LITERAL_FLAG_BINARY };
 
@@ -70,7 +71,7 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
         uint64_t flag = integer_prefix_flags[suffix_index];
         rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
         starts_with |= flag;
-        rlsl_cursor_advance(&cursor_current, source, strlen(str));
+        result_size = rlsl_cursor_advance(&cursor_current, source, strlen(str));
     } else if(isdigit((uint8_t)source[cursor_current.index])) {
         starts_with |= TOKEN_LITERAL_FLAG_DECIMAL;
     } else if(isalpha((uint8_t)source[cursor_current.index])) {
@@ -86,7 +87,7 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
         contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
         starts_with |= TOKEN_LITERAL_FLAG_DECIMAL_POINT;
         decimal_point_count++;
-        rlsl_cursor_advance(&cursor_current, source, strlen(str));
+        result_size = rlsl_cursor_advance(&cursor_current, source, strlen(str));
     }
 
     //check characters
@@ -97,6 +98,7 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
             rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
             rlsl_cursor_advance(&cursor_current, source, strlen(str));
             str = NULL;
+            result_size++;
         }
 
         const char current_char = source[cursor_current.index];
@@ -148,6 +150,10 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
             contains_flags |= TOKEN_LITERAL_FLAG_INVALID;
             continue;
         }
+    }
+
+    if(result_size == 0) {
+        goto done;
     }
 
     if(contains_flags & TOKEN_LITERAL_FLAG_INVALID) {
@@ -220,7 +226,7 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
 
         //decimal numbers cannot start with zeros (in some languages they can but then they would be octal)
         //caution: only if the number is actually more than 1 character wide. the number '0' **is** valid
-        if(result[0] == '0' && result[1] != '\0') {
+        if(result_size > 1 && result[0] == '0') {
             rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_DECIMAL_LEADING_ZERO, cursor, &cursor_current));
             goto done;
         }
