@@ -104,7 +104,7 @@ typedef struct rlsl_token_t {
             bool overflow;
         } num_int;
         struct {
-            long double value;
+            double value;
             bool overflow;
         } num_float;
         char* identifier;

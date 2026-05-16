@@ -8,6 +8,7 @@
 #include "rlsl_token.h"
 
 _Static_assert(sizeof(unsigned long long) == 8, "Expected 64-bit unsigned long long");
+_Static_assert(sizeof(double) == 8, "Expected 64-bit doubles");
 
 typedef struct rlsl_token_str_to_type_t {
     const char* string;
@@ -357,7 +358,7 @@ bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_r
         }
 
         errno = 0;
-        long double value = strtold(result, NULL);
+        double value = strtod(result, NULL);
         bool overflow = errno == ERANGE;
         rlsl_vec_push(res->tokens, rlsl_token_create_float(value, overflow, (*cursor), cursor_current));
         goto done;

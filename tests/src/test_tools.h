@@ -4,7 +4,7 @@
 typedef struct expect_token_t {
     rlsl_token_type_t type;
     union {
-        long double d;
+        double d;
         uint64_t i;
         const char* s;
     } value;
