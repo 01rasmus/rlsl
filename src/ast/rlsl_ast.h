@@ -20,13 +20,11 @@ void rlsl_ast_module_free(rlsl_ast_module_t* m);
 /*
     helper functions
 */
-rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t expected_token);
+rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
 bool rlsl_ast_token_next_is(rlsl_token_stream_t* ts, rlsl_token_type_t token);
 
-/*
-    this function creates an error on fail
-*/
-bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token);
+/* this function creates an error on fail */
+bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
 
 /*
     this function does not create an error

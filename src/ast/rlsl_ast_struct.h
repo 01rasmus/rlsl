@@ -3,6 +3,8 @@
 #include "rlsl_cursor.h"
 #include "rlsl_token_stream.h"
 
+typedef struct rlsl_ast_module_t rlsl_ast_module_t;
+
 typedef enum rlsl_ast_precision_t {
     RLSL_AST_PRECISION_NONE,
     RLSL_AST_PRECISION_LOWP,
@@ -26,8 +28,8 @@ typedef struct rlsl_ast_struct_t {
     rlsl_cursor_t end;
 } rlsl_ast_struct_t;
 
-bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct);
-bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_member_t* out_struct_member);
+bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct, rlsl_ast_module_t* m);
+bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_member_t* out_struct_member, rlsl_ast_module_t* m);
 
 void rlsl_ast_struct_free(rlsl_ast_struct_t* s);
 void rlsl_ast_struct_member_free(rlsl_ast_struct_member_t* sm);

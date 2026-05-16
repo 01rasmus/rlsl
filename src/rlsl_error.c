@@ -1,6 +1,33 @@
 #include <stdio.h>
+#include <stdarg.h>
+#include <stdlib.h>
 #include "tools/rlsl_str.h"
 #include "rlsl_error.h"
+
+rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t start, rlsl_cursor_t end, const char* format, ...) {
+    rlsl_error_t error = (rlsl_error_t) {
+        .code = error_code,
+        .start = start,
+        .end = end,
+        .message_is_static = false,
+        .severity = rlsl_error_severity(error_code),
+        .message = NULL,
+        .dynamic_message = NULL
+    };
+
+    va_list args;
+    va_list args_copy;
+    va_start(args, format);
+    va_copy(args_copy, args);
+
+    int32_t size = vsnprintf(NULL, 0, format, args) + 1;
+    va_end(args);
+
+    error.dynamic_message = malloc(size);
+    vsnprintf(error.dynamic_message, size, format, args_copy);
+    va_end(args_copy);
+    return error;
+}
 
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code) {
     uint8_t severity = 0;
@@ -31,7 +58,8 @@ const char* rlsl_error_string(rlsl_error_enum_t error_code) {
 }
 
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier) {
-    printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message, error->code);
+
+    printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message_is_static ? error->message : error->dynamic_message, error->code);
     printf(PRINTF_COL_RESET "\t");
 
     const int64_t offset = 10;
@@ -68,4 +96,14 @@ void rlsl_error_print(rlsl_error_t* error, const char* source, const char* ident
         }
     }
     printf(PRINTF_COL_RESET "\n");
+}
+
+void rlsl_error_free(rlsl_error_t* error) {
+    if(!error) {
+        return;
+    }
+    if(!error->message_is_static) {
+        free(error->dynamic_message);
+        error->dynamic_message = NULL;
+    }
 }

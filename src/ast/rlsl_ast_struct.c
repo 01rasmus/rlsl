@@ -6,16 +6,16 @@
 #include "rlsl_ast_struct.h"
 #include "rlsl_ast.h"
 
-bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct) {
+bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct, rlsl_ast_module_t* m) {
     memset(out_struct, 0, sizeof(rlsl_ast_struct_t));
 
     rlsl_token_t* struct_name = rlsl_token_stream_advance(ts);
-    if(!rlsl_ast_token_ensure(struct_name, RLSL_TOKEN_LITERAL_IDENTIFIER)) {
+    if(!rlsl_ast_token_ensure(struct_name, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
         goto err;
     }
     out_struct->name = str_cpy(struct_name->value.identifier);
 
-    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED)) {
+    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED, m)) {
         goto err;
     }
 
@@ -25,17 +25,17 @@ bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struc
         }
 
         rlsl_ast_struct_member_t struct_member;
-        if(rlsl_ast_struct_member_parse(ts, &struct_member)) {
+        if(rlsl_ast_struct_member_parse(ts, &struct_member, m)) {
             rlsl_vec_push(out_struct->members, struct_member);
         } else {
             break;
         }
     }
 
-    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED)) {
+    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED, m)) {
         goto err;
     }
-    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON)) {
+    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON, m)) {
         goto err;
     }
     out_struct->member_count = rlsl_vec_size(out_struct->members);
@@ -47,7 +47,7 @@ err:
     return false;
 }
 
-bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_member_t* out_struct_member) {
+bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_member_t* out_struct_member, rlsl_ast_module_t* m) {
     memset(out_struct_member, 0, sizeof(rlsl_ast_struct_member_t));
 
     rlsl_token_t* first_token = rlsl_token_stream_advance(ts);
@@ -66,14 +66,14 @@ bool rlsl_ast_struct_member_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_membe
         type_token = rlsl_token_stream_advance(ts);
     }
 
-    if(!rlsl_ast_token_ensure(type_token, RLSL_TOKEN_LITERAL_IDENTIFIER)) {
+    if(!rlsl_ast_token_ensure(type_token, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
         goto err;
     }
     rlsl_token_t* name_token = rlsl_token_stream_advance(ts);
-    if(!rlsl_ast_token_ensure(name_token, RLSL_TOKEN_LITERAL_IDENTIFIER)) {
+    if(!rlsl_ast_token_ensure(name_token, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
         goto err;
     }
-    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON)) {
+    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON, m)) {
         goto err;
     }
 

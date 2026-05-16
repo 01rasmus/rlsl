@@ -139,6 +139,10 @@ void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result) {
         rlsl_token_free(&result->tokens[i]);
     }
 
+    for(int64_t i = 0; i < rlsl_vec_size(result->errors); i++) {
+        rlsl_error_free(&result->errors[i]);
+    }
+
     rlsl_vec_free(result->tokens);
     rlsl_vec_free(result->errors);
     free(result);
@@ -467,4 +471,11 @@ bool _rlsl_token_tokenizer_parse_comment(rlsl_cursor_t* cursor, rlsl_tokenizer_r
     rlsl_cursor_advance(cursor, source, diff);
     rlsl_vec_push(res->tokens, rlsl_token_create_static(RLSL_TOKEN_SYMBOL_COMMENT, cur_start, (*cursor)));
     return true;
+}
+
+const char* rlsl_token_type_to_string(rlsl_token_type_t type) {
+    switch(type) {
+        default:
+            return "unknown";
+    }
 }

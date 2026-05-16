@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <stdint.h>
 #include "rlsl_cursor.h"
 
@@ -15,15 +16,21 @@
     X(FLOAT_IS_NOT_DECIMAL,                 0x10006,    "floating point is not a decimal number",       RLSL_SEVERITY_ERROR) \
     X(FLOAT_HAS_TWO_LEADING_ZEROS,          0x10007,    "floating point has two leading zeros",         RLSL_SEVERITY_ERROR) \
     X(DECIMAL_LEADING_ZERO,                 0x10008,    "decimal number has a leading zero",            RLSL_SEVERITY_ERROR) \
+    X(EXPECTED_TOKEN,                       0x10009,    NULL,                                           RLSL_SEVERITY_ERROR) \
 
 #define rlsl_error_create(ERROR_CODE, START, END) \
     (rlsl_error_t) { \
         .message = rlsl_error_string(ERROR_CODE), \
+        .dynamic_message = NULL, \
+        .message_is_static = true, \
         .severity = rlsl_error_severity(ERROR_CODE), \
         .code = (ERROR_CODE), \
         .start = (*START), \
         .end = (*END), \
     }
+
+#define rlsl_error_createf(ERROR_CODE, START, END, ...) \
+    _rlsl_error_createf(ERROR_CODE, START, END, __VA_ARGS__)
 
 typedef enum rlsl_error_enum_t {
     #define X(NAME, CODE, MESSAGE, SEVERITY) RLSL_ERROR_##NAME = CODE,
@@ -33,12 +40,16 @@ typedef enum rlsl_error_enum_t {
 
 typedef struct rlsl_error_t {
     const char* message;
+    char* dynamic_message;
+    bool message_is_static;
     uint8_t severity;
     rlsl_error_enum_t code;
     rlsl_cursor_t start;
     rlsl_cursor_t end;
 } rlsl_error_t;
 
+rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t start, rlsl_cursor_t end, const char* format, ...);
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code);
 const char* rlsl_error_string(rlsl_error_enum_t error_code);
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier);
+void rlsl_error_free(rlsl_error_t* error);
