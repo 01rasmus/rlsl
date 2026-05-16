@@ -22,5 +22,5 @@ typedef struct rlsl_ast_member_t {
 } rlsl_ast_member_t;
 
 bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_member, rlsl_ast_module_t* m);
-uint64_t rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, rlsl_ast_module_t* m);
+bool rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, uint64_t* out_comp_count, rlsl_ast_module_t* m);
 void rlsl_ast_member_free(rlsl_ast_member_t* sm);

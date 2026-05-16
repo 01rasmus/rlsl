@@ -49,7 +49,10 @@ bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_membe
     if(!rlsl_ast_token_ensure(name_token, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
         goto err;
     }
-    uint64_t comp_count = rlsl_ast_member_array_count_parse(ts, m);
+    uint64_t comp_count;
+    if(!rlsl_ast_member_array_count_parse(ts, &out_member->component_count, m)) {
+        goto err;
+    }
     if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON, m)) {
         goto err;
     }
@@ -58,18 +61,18 @@ bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_membe
     out_member->type = rlsl_str_cpy(type_token->value.identifier);
     out_member->start = first_token->cursor_start;
     out_member->end = name_token->cursor_end;
-    out_member->component_count = comp_count;
     return true;
 err:
-    rlsl_token_stream_recover(ts, true);
+    rlsl_token_stream_recover_var_declaration(ts, true);
     rlsl_ast_member_free(out_member);
     return false;
 }
 
-uint64_t rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, rlsl_ast_module_t* m) {
+bool rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, uint64_t* out_comp_count, rlsl_ast_module_t* m) {
     if(!rlsl_ast_token_next_is(ts, RLSL_TOKEN_SYMBOL_BRACKET_OPENED)) {
         //it is not an array structure, so we shouldnt parse anything
-        return 1;
+        (*out_comp_count) = 1;
+        return true;
     }
 
     if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_BRACKET_OPENED, m)) {
@@ -85,10 +88,11 @@ uint64_t rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, rlsl_ast_mod
     if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_BRACKET_CLOSED, m)) {
         goto err;
     }
-    return comp_count;
+    (*out_comp_count) = comp_count;
+    return true;
 err:
-    rlsl_token_stream_recover(ts, false);
-    return 1;
+    rlsl_token_stream_recover_var_declaration(ts, false);
+    return false;
 }
 
 void rlsl_ast_member_free(rlsl_ast_member_t* sm) {

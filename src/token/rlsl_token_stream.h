@@ -22,12 +22,11 @@ bool rlsl_token_stream_is_at_end(rlsl_token_stream_t* ts);
 */
 rlsl_token_t* rlsl_token_stream_peek(rlsl_token_stream_t* ts, int64_t offset);
 
+/*
+    consumes the next token and
+    changes the walker's position
+*/
 rlsl_token_t* rlsl_token_stream_advance(rlsl_token_stream_t* ts);
 
-/*
-    jumps forward to a safe spot in case of a failure
-    to make sure the parser can get expected tokens.
-
-    this function jumps forward to either } or ;
-*/
-void rlsl_token_stream_recover(rlsl_token_stream_t* ts, bool consume_token);
+void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts, bool consume_token);
+void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts);

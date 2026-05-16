@@ -41,7 +41,7 @@ bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struc
     out_struct->end = struct_name->cursor_end;
     return true;
 err:
-    rlsl_token_stream_recover(ts, true);
+    rlsl_token_stream_recover_top_level(ts);
     rlsl_ast_struct_free(out_struct);
     return false;
 }
