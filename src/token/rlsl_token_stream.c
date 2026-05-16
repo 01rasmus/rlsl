@@ -65,19 +65,14 @@ void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts, bool con
 }
 
 void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts) {
-    rlsl_token_type_t top_level_types[] = {
-        RLSL_TOKEN_KEYWORD_STRUCT,
-        RLSL_TOKEN_KEYWORD_UNIFORM,
-    };
-
     while(true) {
         rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
         if(!token) {
             return;
         }
 
-        for(int64_t i = 0; i < (sizeof(top_level_types) / sizeof(top_level_types[0])); i++) {
-            if(token->type == top_level_types[i]) {
+        for(int64_t i = 0; i < (sizeof(top_level_tokens) / sizeof(top_level_tokens[0])); i++) {
+            if(token->type == top_level_tokens[i]) {
                 return;
             }
         }

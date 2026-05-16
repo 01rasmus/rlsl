@@ -23,11 +23,7 @@ rlsl_ast_module_t rlsl_ast_parse_tokens(rlsl_token_t* tokens, size_t token_count
             break;
         }
 
-        rlsl_token_type_t expected[] = {
-            RLSL_TOKEN_KEYWORD_STRUCT,
-            RLSL_TOKEN_KEYWORD_UNIFORM,
-        };
-        rlsl_token_t* first_token = rlsl_ast_token_expect_any_of(&ts, expected, &ast_module);
+        rlsl_token_t* first_token = rlsl_ast_token_expect_any_of(&ts, top_level_tokens, &ast_module);
         if(!first_token) {
             break;
         }
@@ -131,7 +127,7 @@ bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token
     return true;
 }
 
-rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m) {
+rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m) {
     rlsl_token_t* token = rlsl_token_stream_advance(ts);
     if(!token) {
         rlsl_vec_push(m->errors, rlsl_error_create(RLSL_ERROR_END_OF_TOKEN_STREAM, &m->last_cursor_start, &m->last_cursor_end));
@@ -160,7 +156,7 @@ rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, rlsl_token_
     return NULL;
 }
 
-bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m) {
+bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m) {
     if(expected_token_count == 1) {
         return rlsl_ast_token_ensure(token, expected_tokens[0], m);
     }

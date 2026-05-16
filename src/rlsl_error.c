@@ -34,7 +34,7 @@ rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t sta
     return error;
 }
 
-rlsl_error_t rlsl_error_create_from_expected_tokens(rlsl_cursor_t start, rlsl_cursor_t end, rlsl_token_type_t got_token_type, rlsl_token_type_t* expected_tokens, int64_t expected_tokens_count) {
+rlsl_error_t rlsl_error_create_from_expected_tokens(rlsl_cursor_t start, rlsl_cursor_t end, rlsl_token_type_t got_token_type, const rlsl_token_type_t* expected_tokens, int64_t expected_tokens_count) {
     
     strcpy(temp_string, "expected token");
     for(int64_t i = 0; i < expected_tokens_count; i++) {

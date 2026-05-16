@@ -34,8 +34,8 @@ void rlsl_ast_module_free(rlsl_ast_module_t* m);
 
 rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
 bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
-rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
-bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
+rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
+bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
 
 /*
     helper functions that does not create errors

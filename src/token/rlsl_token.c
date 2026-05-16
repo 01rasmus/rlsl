@@ -22,6 +22,11 @@ static rlsl_tokenizer_function_t tokenizer_functions[] = {
     rlsl_token_tokenizer_parse_single_char_token,
 };
 
+const rlsl_token_type_t top_level_tokens[2] = {
+    RLSL_TOKEN_KEYWORD_STRUCT,
+    RLSL_TOKEN_KEYWORD_UNIFORM,
+};
+
 rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier) {
     rlsl_tokenizer_result_t* res = malloc(sizeof(rlsl_tokenizer_result_t));
     if(!res) {
