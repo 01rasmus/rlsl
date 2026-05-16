@@ -1,7 +1,7 @@
 #pragma once
 #include <stdbool.h>
+#include "token/rlsl_token.h"
 #include "rlsl_cursor.h"
-#include "rlsl_token.h"
 #include "rlsl_ast_struct.h"
 
 typedef struct rlsl_token_stream_t rlsl_token_stream_t;

@@ -1,5 +1,5 @@
 #pragma once
-#include <rlsl_token.h>
+#include <token/rlsl_token.h>
 
 typedef struct expect_token_t {
     rlsl_token_type_t type;

@@ -1,5 +1,5 @@
 #include <string.h>
-#include <rlsl_token.h>
+#include <token/rlsl_token.h>
 #include "test_tools.h"
 
 bool test_token_identifier() {

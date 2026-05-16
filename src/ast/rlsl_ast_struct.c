@@ -2,7 +2,7 @@
 #include <string.h>
 #include "tools/rlsl_str.h"
 #include "tools/rlsl_vec.h"
-#include "rlsl_token.h"
+#include "token/rlsl_token.h"
 #include "rlsl_ast_struct.h"
 #include "rlsl_ast.h"
 

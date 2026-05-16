@@ -1,6 +1,6 @@
 #include <math.h>
 #include <string.h>
-#include <rlsl_token.h>
+#include <token/rlsl_token.h>
 #include "test_tools.h"
 
 bool expect_token(const char* source, const expect_token_t expect) {
