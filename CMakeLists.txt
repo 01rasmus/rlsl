@@ -10,8 +10,8 @@ set(TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 
 # source
 file(GLOB_RECURSE RLSL_LIB_SRC "${SRC_DIR}/*.c")
-file(GLOB_RECURSE RLSL_CLI_SRC "${CLI_DIR}/*c")
-file(GLOB_RECURSE RLSL_TESTS_SRC "${TEST_DIR}/*c")
+file(GLOB_RECURSE RLSL_CLI_SRC "${CLI_DIR}/*.c")
+file(GLOB_RECURSE RLSL_TESTS_SRC "${TEST_DIR}/*.c")
 
 # binaries
 set(RLSLC "rlslc")

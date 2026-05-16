@@ -11,18 +11,19 @@ int32_t main(int32_t argc, char** args) {
     if(argc != 2) {
         return 0;
     }
-    FILE* file = fopen(args[1], "r");
+    FILE* file = fopen(args[1], "rb");
     int64_t length = 0;
     fseek(file, 0, SEEK_END);
     length = ftell(file);
     fseek(file, 0, SEEK_SET);
-    char* buffer = malloc(length);
+    char* buffer = malloc(length + 1);
     if(!buffer) {
         return 0;
     }
     fread(buffer, 1, length, file);
     fclose(file);
     file = NULL;
+    buffer[length] = '\0';
 
     //transpile
     rlsl_tokenizer_result_t* res = rlsl_token_tokenize_string(buffer, args[1]);
