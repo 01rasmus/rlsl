@@ -88,6 +88,7 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_number_integer_operators_with_new_line),
     TEST_REGISTRATION(test_token_number_integer_operators_with_tab),
     TEST_REGISTRATION(test_token_number_float_with_decimal_point_at_start),
+    TEST_REGISTRATION(test_token_number_integer_zero),
 
     TEST_REGISTRATION(test_token_identifier),
     TEST_REGISTRATION(test_token_identifier_address_sequence),

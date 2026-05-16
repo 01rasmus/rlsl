@@ -163,3 +163,7 @@ bool test_token_number_integer_operators_with_tab() {
 bool test_token_number_float_with_decimal_point_at_start() {
     return expect_token(".4", EXPECT_TOKEN_FLOAT(0.4));
 }
+
+bool test_token_number_integer_zero() {
+    return expect_token("0", EXPECT_TOKEN_INT(0));
+}

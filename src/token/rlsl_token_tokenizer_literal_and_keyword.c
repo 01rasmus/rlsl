@@ -219,7 +219,8 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
         }
 
         //decimal numbers cannot start with zeros (in some languages they can but then they would be octal)
-        if(result[0] == '0') {
+        //caution: only if the number is actually more than 1 character wide. the number '0' **is** valid
+        if(result[0] == '0' && result[1] != '\0') {
             rlsl_vec_push(res->errors, rlsl_error_create(RLSL_ERROR_DECIMAL_LEADING_ZERO, cursor, &cursor_current));
             goto done;
         }

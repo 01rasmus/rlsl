@@ -1,9 +1,8 @@
-struct test {
-    float const;
-    vec3 b;
+struct Light {
+    vec3 position;
+    vec3 color;
 };
 
-struct test2 {
-    highp2 float a;
-    vec3 b;
+uniform(0) light {
+    highp Light lights[40];
 };
