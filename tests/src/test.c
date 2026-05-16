@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <rlsl_tools/rlsl_str.h>
+#include <tools/rlsl_str.h>
 
 #include "tests_token_static.h"
 #include "tests_token_numbers.h"

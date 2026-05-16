@@ -1,6 +1,6 @@
 #include <string.h>
 #include <rlsl_token.h>
-#include <rlsl_ast.h>
+#include <ast/rlsl_ast.h>
 #include "test_tools.h"
 
 #include <stdio.h>
