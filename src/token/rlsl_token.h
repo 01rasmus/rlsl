@@ -13,56 +13,54 @@
 #define TOKEN_LITERAL_FLAG_DECIMAL_POINT    0x20
 #define TOKEN_LITERAL_FLAG_INVALID          0x40
 
+#define RLSL_TOKEN_TYPE(X) \
+    X(RLSL_TOKEN_LITERAL_IDENTIFIER, "identifier") \
+    X(RLSL_TOKEN_LITERAL_FALSE, "false boolean literal") \
+    X(RLSL_TOKEN_LITERAL_TRUE, "true boolean literal") \
+    X(RLSL_TOKEN_LITERAL_FLOAT, "float literal") \
+    X(RLSL_TOKEN_LITERAL_INT, "integer literal") \
+    X(RLSL_TOKEN_PRECISION_LOWP, "lowp") \
+    X(RLSL_TOKEN_PRECISION_MEDIUMP, "mediump") \
+    X(RLSL_TOKEN_PRECISION_HIGHP, "highp") \
+    X(RLSL_TOKEN_KEYWORD_UNIFORM, "uniform") \
+    X(RLSL_TOKEN_KEYWORD_INPUT, "input") \
+    X(RLSL_TOKEN_KEYWORD_OUTPUT, "output") \
+    X(RLSL_TOKEN_KEYWORD_STRUCT, "struct") \
+    X(RLSL_TOKEN_KEYWORD_WHILE, "while") \
+    X(RLSL_TOKEN_KEYWORD_FOR, "for") \
+    X(RLSL_TOKEN_KEYWORD_IF, "if") \
+    X(RLSL_TOKEN_KEYWORD_ELSE, "else") \
+    X(RLSL_TOKEN_KEYWORD_RETURN, "return") \
+    X(RLSL_TOKEN_KEYWORD_CONST, "const") \
+    X(RLSL_TOKEN_SYMBOL_SPACE, "space") \
+    X(RLSL_TOKEN_SYMBOL_COMMENT, "comment") \
+    X(RLSL_TOKEN_SYMBOL_SEMICOLON, ";") \
+    X(RLSL_TOKEN_SYMBOL_COLON, ":") \
+    X(RLSL_TOKEN_SYMBOL_STAR, "*") \
+    X(RLSL_TOKEN_SYMBOL_DASH, "-") \
+    X(RLSL_TOKEN_SYMBOL_PLUS, "+") \
+    X(RLSL_TOKEN_SYMBOL_FORWARD_SLASH, "/") \
+    X(RLSL_TOKEN_SYMBOL_TILDE, "~") \
+    X(RLSL_TOKEN_SYMBOL_DOT, ".") \
+    X(RLSL_TOKEN_SYMBOL_AND, "&") \
+    X(RLSL_TOKEN_SYMBOL_PIPE, "|") \
+    X(RLSL_TOKEN_SYMBOL_PERCENT, "%") \
+    X(RLSL_TOKEN_SYMBOL_EXCLAMATION, "!") \
+    X(RLSL_TOKEN_SYMBOL_EQUAL, "=") \
+    X(RLSL_TOKEN_SYMBOL_COMMA, ",") \
+    X(RLSL_TOKEN_SYMBOL_ARROW_LEFT, "<") \
+    X(RLSL_TOKEN_SYMBOL_ARROW_RIGHT, ">") \
+    X(RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED, "{") \
+    X(RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED, "}") \
+    X(RLSL_TOKEN_SYMBOL_BRACKET_OPENED, "[") \
+    X(RLSL_TOKEN_SYMBOL_BRACKET_CLOSED, "]") \
+    X(RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED, "(") \
+    X(RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED, ")")
+
 typedef enum rlsl_token_type_t {
-    //literals
-    RLSL_TOKEN_LITERAL_IDENTIFIER = 0,
-    RLSL_TOKEN_LITERAL_FALSE,
-    RLSL_TOKEN_LITERAL_TRUE,
-    RLSL_TOKEN_LITERAL_FLOAT,
-    RLSL_TOKEN_LITERAL_INT,
-
-    //precision modifiers
-    RLSL_TOKEN_PRECISION_LOWP,
-    RLSL_TOKEN_PRECISION_MEDIUMP,
-    RLSL_TOKEN_PRECISION_HIGHP,
-
-    //keywords
-    RLSL_TOKEN_KEYWORD_UNIFORM,
-    RLSL_TOKEN_KEYWORD_INPUT,
-    RLSL_TOKEN_KEYWORD_OUTPUT,
-    RLSL_TOKEN_KEYWORD_STRUCT,
-    RLSL_TOKEN_KEYWORD_WHILE,
-    RLSL_TOKEN_KEYWORD_FOR,
-    RLSL_TOKEN_KEYWORD_IF,
-    RLSL_TOKEN_KEYWORD_ELSE,
-    RLSL_TOKEN_KEYWORD_RETURN,
-    RLSL_TOKEN_KEYWORD_CONST,
-
-    //symbols
-    RLSL_TOKEN_SYMBOL_SPACE,
-    RLSL_TOKEN_SYMBOL_COMMENT,
-    RLSL_TOKEN_SYMBOL_SEMICOLON,
-    RLSL_TOKEN_SYMBOL_COLON,
-    RLSL_TOKEN_SYMBOL_STAR,
-    RLSL_TOKEN_SYMBOL_DASH,
-    RLSL_TOKEN_SYMBOL_PLUS,
-    RLSL_TOKEN_SYMBOL_FORWARD_SLASH,
-    RLSL_TOKEN_SYMBOL_TILDE,
-    RLSL_TOKEN_SYMBOL_DOT,
-    RLSL_TOKEN_SYMBOL_AND,
-    RLSL_TOKEN_SYMBOL_PIPE,
-    RLSL_TOKEN_SYMBOL_PERCENT,
-    RLSL_TOKEN_SYMBOL_EXCLAMATION,
-    RLSL_TOKEN_SYMBOL_EQUAL,
-    RLSL_TOKEN_SYMBOL_COMMA,
-    RLSL_TOKEN_SYMBOL_ARROW_LEFT,
-    RLSL_TOKEN_SYMBOL_ARROW_RIGHT,
-    RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED,
-    RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED,
-    RLSL_TOKEN_SYMBOL_BRACKET_OPENED,
-    RLSL_TOKEN_SYMBOL_BRACKET_CLOSED,
-    RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED,
-    RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED,
+    #define X(NAME, STRING) NAME,
+    RLSL_TOKEN_TYPE(X)
+    #undef X
 } rlsl_token_type_t;
 
 #define rlsl_token_create_static(TYPE, CURSOR_START, CURSOR_END)             (rlsl_token_t){ .type = (TYPE), .cursor_start = (CURSOR_START), .cursor_end = (CURSOR_END) }
@@ -118,6 +116,11 @@ typedef struct rlsl_tokenizer_result_t {
     rlsl_error_t* errors;
 } rlsl_tokenizer_result_t;
 
+typedef struct rlsl_token_str_to_type_t {
+    const char* string;
+    rlsl_token_type_t type;
+} rlsl_token_str_to_type_t;
+
 typedef bool (*rlsl_tokenizer_function_t)(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
 
 rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const char* compile_unit_identifier);
@@ -125,12 +128,3 @@ void rlsl_tokenizer_result_free(rlsl_tokenizer_result_t* result);
 void rlsl_token_free(rlsl_token_t* token);
 
 const char* rlsl_token_type_to_string(rlsl_token_type_t type);
-
-/*
-    internal tokenizer functions
-*/
-bool _rlsl_token_tokenizer_parse_comment(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
-bool _rlsl_token_tokenizer_parse_keyword(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
-bool _rlsl_token_tokenizer_parse_literal(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
-bool _rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
-bool _rlsl_token_tokenizer_parse_single_char_token(rlsl_cursor_t* cursor, rlsl_tokenizer_result_t* res, const char* source, const char* compile_unit_identifier);
