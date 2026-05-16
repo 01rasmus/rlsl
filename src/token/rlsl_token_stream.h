@@ -30,4 +30,4 @@ rlsl_token_t* rlsl_token_stream_advance(rlsl_token_stream_t* ts);
 
     this function jumps forward to either } or ;
 */
-void rlsl_token_stream_recover(rlsl_token_stream_t* ts);
+void rlsl_token_stream_recover(rlsl_token_stream_t* ts, bool consume_token);

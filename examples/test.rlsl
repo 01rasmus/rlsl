@@ -1,5 +1,5 @@
 struct Light {
-    vec3 position;
+    vec3 position[2];
     vec3 color;
 };
 

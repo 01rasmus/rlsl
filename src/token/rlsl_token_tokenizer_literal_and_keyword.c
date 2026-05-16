@@ -6,8 +6,6 @@
 #include "tools/rlsl_vec.h"
 #include "rlsl_token_tokenizer_literal_and_keyword.h"
 
-#include <stdio.h>
-
 _Static_assert(sizeof(unsigned long long) == 8, "Expected 64-bit unsigned long long");
 _Static_assert(sizeof(double) == 8, "Expected 64-bit doubles");
 
