@@ -91,7 +91,7 @@ typedef enum rlsl_token_type_t {
     .value.identifier = (IDENT), \
 }
 
-extern const rlsl_token_type_t top_level_tokens[2];
+extern const rlsl_token_type_t top_level_tokens[4];
 
 typedef struct rlsl_token_t {
     rlsl_token_type_t type;

@@ -4,15 +4,20 @@
 #include "rlsl_cursor.h"
 #include "rlsl_ast_struct.h"
 #include "rlsl_ast_uniform.h"
+#include "rlsl_ast_io.h"
 
 typedef struct rlsl_token_stream_t rlsl_token_stream_t;
 
-typedef struct rlsl_ast_module_t {
-    size_t struct_count;
-    rlsl_ast_struct_t* structs;
+#define RLSL_AST_MODULE_PARTS(X) \
+    X(struct, rlsl_ast_struct) \
+    X(uniform, rlsl_ast_uniform) \
+    X(input, rlsl_ast_io) \
+    X(output, rlsl_ast_io)
 
-    size_t uniform_count;
-    rlsl_ast_uniform_t* uniforms;
+typedef struct rlsl_ast_module_t {
+    #define X(NAME, TYPE) size_t NAME##_count; TYPE##_t* NAME##s;
+    RLSL_AST_MODULE_PARTS(X)
+    #undef X
 
     rlsl_cursor_t last_cursor_start;
     rlsl_cursor_t last_cursor_end;

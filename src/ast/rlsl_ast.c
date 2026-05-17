@@ -5,6 +5,7 @@
 #include "rlsl_ast.h"
 #include "rlsl_ast_struct.h"
 #include "rlsl_ast_uniform.h"
+#include "rlsl_ast_io.h"
 
 rlsl_ast_module_t rlsl_ast_parse_tokens(rlsl_token_t* tokens, size_t token_count) {
     rlsl_token_stream_t ts = rlsl_token_stream_create(tokens, token_count);
@@ -43,14 +44,30 @@ rlsl_ast_module_t rlsl_ast_parse_tokens(rlsl_token_t* tokens, size_t token_count
                 }
                 continue;
             }
+            case RLSL_TOKEN_KEYWORD_INPUT: {
+                rlsl_ast_io_t io;
+                if(rlsl_ast_io_parse(&ts, RLSL_AST_IO_INPUT, &io, &ast_module)) {
+                    rlsl_vec_push(ast_module.inputs, io);
+                }
+                continue;
+            }
+            case RLSL_TOKEN_KEYWORD_OUTPUT: {
+                rlsl_ast_io_t io;
+                if(rlsl_ast_io_parse(&ts, RLSL_AST_IO_OUTPUT, &io, &ast_module)) {
+                    rlsl_vec_push(ast_module.outputs, io);
+                }
+                continue;
+            }
             default:
                 //error
                 continue;
         }
     }
 
-    ast_module.struct_count = rlsl_vec_size(ast_module.structs);
-    ast_module.uniform_count = rlsl_vec_size(ast_module.uniforms);
+    #define X(NAME, TYPE) ast_module.NAME##_count = rlsl_vec_size(ast_module.NAME##s);
+    RLSL_AST_MODULE_PARTS(X)
+    #undef X
+
     ast_module.error_count = rlsl_vec_size(ast_module.errors);
     return ast_module;
 }
@@ -59,18 +76,18 @@ void rlsl_ast_module_free(rlsl_ast_module_t* m) {
     if(!m) {
         return;
     }
-    for(int64_t i = 0; i < rlsl_vec_size(m->structs); i++) {
-        rlsl_ast_struct_free(&m->structs[i]);
-    }
-    for(int64_t i = 0; i < rlsl_vec_size(m->uniforms); i++) {
-        rlsl_ast_uniform_free(&m->uniforms[i]);
-    }
+
+    #define X(NAME, TYPE) for(int64_t i = 0; i < rlsl_vec_size(m->NAME##s); i++) { \
+        TYPE##_free(&(m->NAME##s)[i]); \
+    } \
+    rlsl_vec_free(m->NAME##s); \
+    m->NAME##s = NULL;
+    RLSL_AST_MODULE_PARTS(X)
+    #undef X
+
     for(int64_t i = 0; i < rlsl_vec_size(m->errors); i++) {
         rlsl_error_free(&m->errors[i]);
     }
-
-    rlsl_vec_free(m->structs);
-    rlsl_vec_free(m->uniforms);
     rlsl_vec_free(m->errors);
 }
 
