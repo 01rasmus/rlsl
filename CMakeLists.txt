@@ -28,3 +28,7 @@ target_include_directories(${RLSL_LIB} PRIVATE PUBLIC ${SRC_DIR})
 
 target_link_libraries(${RLSLC} ${RLSL_LIB})
 target_link_libraries(${RLSL_TESTS} ${RLSL_LIB})
+
+# tests
+enable_testing()
+add_test(NAME ${RLSL_TESTS} COMMAND ${RLSL_TESTS})
