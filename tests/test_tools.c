@@ -1,6 +1,5 @@
 #include <math.h>
 #include <string.h>
-#include <token/rlsl_token.h>
 #include "test_tools.h"
 
 bool expect_token(const char* source, const expect_token_t expect) {
@@ -77,4 +76,21 @@ bool expect_error(const char* source, const rlsl_error_enum_t error, uint64_t st
 fail:
     rlsl_tokenizer_result_free(res);
     return false;
+}
+
+bool expect_ast(const char* source, const rlsl_ast_module_t* expected_module) {
+    rlsl_tokenizer_result_t* res = rlsl_token_tokenize_string(source, NULL);
+    if(res->error_count > 0) {
+        return false;
+    }
+    
+    rlsl_ast_module_t ast = rlsl_ast_parse_tokens(res->tokens, res->token_count);
+    if(ast.error_count > 0) {
+        return false;
+    }
+
+    bool are_equal = rlsl_ast_module_equal(&ast, expected_module);
+    rlsl_tokenizer_result_free(res);
+    rlsl_ast_module_free(&ast);
+    return are_equal;
 }

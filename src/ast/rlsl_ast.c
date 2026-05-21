@@ -72,6 +72,23 @@ rlsl_ast_module_t rlsl_ast_parse_tokens(rlsl_token_t* tokens, size_t token_count
     return ast_module;
 }
 
+#include <stdio.h>
+bool rlsl_ast_module_equal(const rlsl_ast_module_t* a, const rlsl_ast_module_t* b) {
+    #define X(NAME, TYPE) if(a->NAME##_count != b->NAME##_count) { \
+        return false; \
+    } \
+    for(int64_t i = 0; i < a->NAME##_count; i++) { \
+        if(!TYPE##_equal(&a->NAME##s[i], &b->NAME##s[i])) { \
+            return false; \
+        } \
+    }
+    
+    RLSL_AST_MODULE_PARTS(X)
+    #undef X
+
+    return true;
+}
+
 void rlsl_ast_module_free(rlsl_ast_module_t* m) {
     if(!m) {
         return;

@@ -27,6 +27,7 @@ typedef struct rlsl_ast_module_t {
 } rlsl_ast_module_t;
 
 rlsl_ast_module_t rlsl_ast_parse_tokens(rlsl_token_t* tokens, size_t token_count);
+bool rlsl_ast_module_equal(const rlsl_ast_module_t* a, const rlsl_ast_module_t* b);
 void rlsl_ast_module_free(rlsl_ast_module_t* m);
 
 /*

@@ -53,14 +53,16 @@ bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_membe
     if(!rlsl_ast_member_array_count_parse(ts, &out_member->component_count, m)) {
         goto err;
     }
-    if(!rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON, m)) {
+
+    rlsl_token_t* end_token = rlsl_ast_token_expect(ts, RLSL_TOKEN_SYMBOL_SEMICOLON, m);
+    if(!end_token) {
         goto err;
     }
 
     out_member->name = rlsl_str_cpy(name_token->value.identifier);
     out_member->type = rlsl_str_cpy(type_token->value.identifier);
     out_member->start = first_token->cursor_start;
-    out_member->end = name_token->cursor_end;
+    out_member->end = end_token->cursor_end;
     return true;
 err:
     rlsl_token_stream_recover_var_declaration(ts, true);
@@ -93,6 +95,28 @@ bool rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, uint64_t* out_co
 err:
     rlsl_token_stream_recover_var_declaration(ts, false);
     return false;
+}
+
+bool rlsl_ast_member_equal(const rlsl_ast_member_t* a, const rlsl_ast_member_t* b) {
+    if(a->component_count != b->component_count) {
+        return false;
+    }
+    if(a->precision != b->precision) {
+        return false;
+    }
+    if(strcmp(a->name, b->name) != 0) {
+        return false;
+    }
+    if(strcmp(a->type, b->type) != 0) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->start, &b->start) != 0) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->end, &b->end) != 0) {
+        return false;
+    }
+    return true;
 }
 
 void rlsl_ast_member_free(rlsl_ast_member_t* sm) {

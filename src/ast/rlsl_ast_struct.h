@@ -15,4 +15,5 @@ typedef struct rlsl_ast_struct_t {
 } rlsl_ast_struct_t;
 
 bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct, rlsl_ast_module_t* m);
+bool rlsl_ast_struct_equal(const rlsl_ast_struct_t* a, const rlsl_ast_struct_t* b);
 void rlsl_ast_struct_free(rlsl_ast_struct_t* s);

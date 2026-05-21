@@ -20,4 +20,5 @@ typedef struct rlsl_ast_io_t {
 } rlsl_ast_io_t;
 
 bool rlsl_ast_io_parse(rlsl_token_stream_t* ts, rlsl_ast_io_type_t type, rlsl_ast_io_t* out_io, rlsl_ast_module_t* m);
+bool rlsl_ast_io_equal(const rlsl_ast_io_t* a, const rlsl_ast_io_t* b);
 void rlsl_ast_io_free(rlsl_ast_io_t* io);

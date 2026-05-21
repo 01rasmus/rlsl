@@ -31,6 +31,25 @@ err:
     return false;
 }
 
+bool rlsl_ast_io_equal(const rlsl_ast_io_t* a, const rlsl_ast_io_t* b) {
+    if(a->type != b->type) {
+        return false;
+    }
+    if(a->index != b->index) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->start, &b->start) != 0) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->end, &b->end) != 0) {
+        return false;
+    }
+    if(!rlsl_ast_member_equal(&a->member, &b->member)) {
+        return false;
+    }
+    return true;
+}
+
 void rlsl_ast_io_free(rlsl_ast_io_t* io) {
     if(!io) {
         return;

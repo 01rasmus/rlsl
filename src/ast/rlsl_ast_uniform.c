@@ -58,6 +58,30 @@ err:
     return false;
 }
 
+bool rlsl_ast_uniform_equal(const rlsl_ast_uniform_t* a, const rlsl_ast_uniform_t* b) {
+    if(a->uniform_index != b->uniform_index) {
+        return false;
+    }
+    if(a->member_count != b->member_count) {
+        return false;
+    }
+    if(strcmp(a->name, b->name) != 0) {
+        return false;
+    }
+    for(size_t i = 0; i < a->member_count; i++) {
+        if(!rlsl_ast_member_equal(&a->members[i], &b->members[i])) {
+            return false;
+        }
+    }
+    if(rlsl_cursor_compare(&a->start, &b->start) != 0) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->end, &b->end) != 0) {
+        return false;
+    }
+    return true;
+}
+
 void rlsl_ast_uniform_free(rlsl_ast_uniform_t* u) {
     if(!u) {
         return;

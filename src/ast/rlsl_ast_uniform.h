@@ -16,4 +16,5 @@ typedef struct rlsl_ast_uniform_t {
 } rlsl_ast_uniform_t;
 
 bool rlsl_ast_uniform_parse(rlsl_token_stream_t* ts, rlsl_ast_uniform_t* out_uniform, rlsl_ast_module_t* m);
+bool rlsl_ast_uniform_equal(const rlsl_ast_uniform_t* a, const rlsl_ast_uniform_t* b);
 void rlsl_ast_uniform_free(rlsl_ast_uniform_t* s);

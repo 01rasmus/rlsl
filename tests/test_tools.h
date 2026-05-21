@@ -1,5 +1,6 @@
 #pragma once
 #include <token/rlsl_token.h>
+#include <ast/rlsl_ast.h>
 
 typedef struct expect_token_t {
     rlsl_token_type_t type;
@@ -23,3 +24,5 @@ bool expect_error(const char* source, const rlsl_error_enum_t error, uint64_t st
     _expect_tokens(SOURCE, EXPECTS, sizeof(EXPECTS) / sizeof(expect_token_t))
 
 bool _expect_tokens(const char* source, const expect_token_t* expects, size_t expects_length);
+
+bool expect_ast(const char* source, const rlsl_ast_module_t* expected_module);

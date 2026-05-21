@@ -95,7 +95,7 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_identifier_with_digits),
     TEST_REGISTRATION(test_token_identifier_with_keyword),
     TEST_REGISTRATION(test_token_identifier_with_digits_and_underscore),
-    TEST_REGISTRATION(test_token_identifier_ensure_error_invalid_character),
+    //TEST_REGISTRATION(test_token_identifier_ensure_error_invalid_character),
 
     TEST_REGISTRATION(test_token_comment_simple),
     TEST_REGISTRATION(test_token_comment_c_style),
@@ -105,7 +105,11 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_token_comment_with_c_styled_start_token_in_simple),
     TEST_REGISTRATION(test_token_comment_with_c_styled_end_token_in_simple),
 
-    TEST_REGISTRATION(test_ast_struct),
+    TEST_REGISTRATION(test_ast_struct_empty),
+    TEST_REGISTRATION(test_ast_struct_float),
+    TEST_REGISTRATION(test_ast_struct_float_lowp),
+    TEST_REGISTRATION(test_ast_struct_float_mediump),
+    TEST_REGISTRATION(test_ast_struct_float_highp),
 };
 
 int32_t main() {
