@@ -175,9 +175,7 @@ rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_
             found = true;
             break;
         }
-    }/*
-    helper functions that don't emit errors
-*/
+    }
 
     if(found) {
         m->last_cursor_start = token->cursor_start;

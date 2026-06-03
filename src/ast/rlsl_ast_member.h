@@ -1,22 +1,15 @@
 #pragma once
 #include <stdbool.h>
 #include "token/rlsl_token_stream.h"
+#include "ast/rlsl_ast_type.h"
 #include "rlsl_cursor.h"
 
 typedef struct rlsl_ast_module_t rlsl_ast_module_t;
 
-typedef enum rlsl_ast_precision_t {
-    RLSL_AST_PRECISION_NONE,
-    RLSL_AST_PRECISION_LOWP,
-    RLSL_AST_PRECISION_MEDIUMP,
-    RLSL_AST_PRECISION_HIGHP,
-} rlsl_ast_precision_t;
-
 typedef struct rlsl_ast_member_t {
     char* name;
-    char* type;
+    rlsl_ast_type_t type;
     uint64_t component_count; // if this is more than 1, it is an array
-    rlsl_ast_precision_t precision;
     rlsl_cursor_t start;
     rlsl_cursor_t end;
 } rlsl_ast_member_t;

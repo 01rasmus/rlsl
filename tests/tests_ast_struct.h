@@ -29,11 +29,16 @@ bool test_ast_struct_float() {
     rlsl_ast_member_t members[] = {
         (rlsl_ast_member_t) {
             .name = "var",
-            .type = "float",
-            .precision = RLSL_AST_PRECISION_NONE,
             .component_count = 1,
+            .type = {
+                .type = "float",
+                .precision = RLSL_AST_PRECISION_NONE,
+                .is_const = false,
+                .start = rlsl_cursor_at_position(source, 1, 15),
+                .end = rlsl_cursor_at_position(source, 1, 20)
+            },
             .start = rlsl_cursor_at_position(source, 1, 15),
-            .end = rlsl_cursor_at_position(source, 1, 25),
+            .end = rlsl_cursor_at_position(source, 1, 25)
         }
     };
 
@@ -60,9 +65,14 @@ bool test_ast_struct_float_lowp() {
     rlsl_ast_member_t members[] = {
         (rlsl_ast_member_t) {
             .name = "var",
-            .type = "float",
-            .precision = RLSL_AST_PRECISION_LOWP,
             .component_count = 1,
+            .type = {
+                .type = "float",
+                .is_const = false,
+                .precision = RLSL_AST_PRECISION_LOWP,
+                .start = rlsl_cursor_at_position(source, 1, 15),
+                .end = rlsl_cursor_at_position(source, 1, 25),
+            },
             .start = rlsl_cursor_at_position(source, 1, 15),
             .end = rlsl_cursor_at_position(source, 1, 30),
         }
@@ -91,9 +101,14 @@ bool test_ast_struct_float_mediump() {
     rlsl_ast_member_t members[] = {
         (rlsl_ast_member_t) {
             .name = "var",
-            .type = "float",
-            .precision = RLSL_AST_PRECISION_MEDIUMP,
             .component_count = 1,
+            .type = {
+                .type = "float",
+                .is_const = false,
+                .precision = RLSL_AST_PRECISION_MEDIUMP,
+                .start = rlsl_cursor_at_position(source, 1, 15),
+                .end = rlsl_cursor_at_position(source, 1, 28),
+            },
             .start = rlsl_cursor_at_position(source, 1, 15),
             .end = rlsl_cursor_at_position(source, 1, 33),
         }
@@ -122,9 +137,14 @@ bool test_ast_struct_float_highp() {
     rlsl_ast_member_t members[] = {
         (rlsl_ast_member_t) {
             .name = "var",
-            .type = "float",
-            .precision = RLSL_AST_PRECISION_HIGHP,
             .component_count = 1,
+            .type = {
+                .type = "float",
+                .is_const = false,
+                .precision = RLSL_AST_PRECISION_HIGHP,
+                .start = rlsl_cursor_at_position(source, 1, 15),
+                .end = rlsl_cursor_at_position(source, 1, 26),
+            },
             .start = rlsl_cursor_at_position(source, 1, 15),
             .end = rlsl_cursor_at_position(source, 1, 31),
         }
