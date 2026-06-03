@@ -12,6 +12,6 @@ input(1) vec2 uv;
 
 output(0) vec2 frag_uv;
 
-struct 1.00 {
-
+struct Test {
+    1.0 float hej;
 };

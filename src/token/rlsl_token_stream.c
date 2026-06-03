@@ -68,6 +68,7 @@ void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts) {
     while(true) {
         rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
         if(!token) {
+            rlsl_token_stream_advance(ts);
             return;
         }
 

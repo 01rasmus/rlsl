@@ -25,8 +25,10 @@ bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rls
     if(token->type == RLSL_TOKEN_KEYWORD_CONST) {
         out_type->is_const = true;
 
-        //since the token was a const, we need to check the next token
-        //for either any of the precision identifiers or and identifier
+        /*
+            since the token was a const, we need to check the next token
+            for either any of the precision identifiers or and identifier
+        */
         rlsl_token_type_t after_const_expected_tokens[] = {
             RLSL_TOKEN_PRECISION_LOWP,
             RLSL_TOKEN_PRECISION_MEDIUMP,
@@ -59,8 +61,10 @@ bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rls
             break;
     }
 
-    //if the last token was a precision token, we need
-    //to get the next identifier token
+    /*
+        if the last token was a precision token, we need
+        to get the next identifier token
+    */
     if(out_type->precision != RLSL_AST_PRECISION_NONE) {
         token = rlsl_ast_token_expect(ts, RLSL_TOKEN_LITERAL_IDENTIFIER, m);
         if(!token) {
@@ -72,7 +76,6 @@ bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rls
     out_type->type = rlsl_str_cpy(token->value.identifier);
     return true;
 err:
-    rlsl_token_stream_recover_var_declaration(ts, true);
     rlsl_ast_type_free(out_type);
     return false;
 }

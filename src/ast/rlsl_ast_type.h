@@ -20,6 +20,10 @@ typedef struct rlsl_ast_type_t {
     bool is_const;
 } rlsl_ast_type_t;
 
+/*
+    this parse function does not recover on failure
+    (which is fine since its always inside another parse function)
+*/
 bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rlsl_ast_module_t* m);
 bool rlsl_ast_type_equal(const rlsl_ast_type_t* a, const rlsl_ast_type_t* b);
 void rlsl_ast_type_free(rlsl_ast_type_t* t);
