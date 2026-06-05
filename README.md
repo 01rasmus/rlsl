@@ -1,4 +1,6 @@
-<h1 align="center">RLSL 🖼️</h1>
+<p align="center">
+    <img src="https://rlsl.dev/favicon.png" width="35%">
+</p>
 <p align="center">A custom shading language made to be used for different graphics APIs in the OpenGL 3.3 and DirectX 10 era</p>
 
 [![Tests](https://github.com/01rasmus/rlsl/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/01rasmus/rlsl/actions/workflows/tests.yml)
