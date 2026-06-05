@@ -47,3 +47,39 @@ char* rlsl_str_cpy(const char* string) {
     }
     return new_string;
 }
+
+void rlsl_str_print_json_string(FILE* fd, const char* str) {
+    for(; *str; str++) {
+        switch(*str) {
+            case '"': {
+                fputs("\\\"", fd); break;
+            }
+            case '\\': {
+                fputs("\\\\", fd); break;
+            }
+            case '\n': {
+                fputs("\\n", fd); break;
+            }
+            case '\r': {
+                fputs("\\r", fd); break;
+            }
+            case '\t': {
+                fputs("\\t", fd); break;
+            }
+            case '\b': {
+                fputs("\\b", fd); break;
+            }
+            case '\f': {
+                fputs("\\f", fd); break;
+            }
+            
+            default: {
+                if ((unsigned char)*str < 0x20) {
+                    fprintf(fd, "\\u%04x", (unsigned char)*str);
+                } else {
+                    fputc(*str, fd);
+                }
+            }
+        }
+    }
+}

@@ -7,7 +7,7 @@ bool rlsl_token_tokenizer_parse_space(rlsl_cursor_t* cursor, rlsl_tokenizer_resu
     rlsl_cursor_t cursor_start = cursor_current;
     bool is_space = false;
     while(1) {
-        const char character = source[cursor_current.index];
+        const char character = source[cursor_current.offset];
         bool current_is_space = isspace((uint8_t)character);
         if(current_is_space) {
             is_space = true;

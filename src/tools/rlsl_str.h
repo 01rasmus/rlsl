@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define PRINTF_COL_RESET            "\x1B[0m"
 #define PRINTF_COL_BOLD             "\x1B[1m"
@@ -48,5 +49,12 @@ size_t rlsl_str_cat(char* dest, size_t dest_total_size, const char* src);
     manually be freed with "free"
 */
 char* rlsl_str_cpy(const char* string);
+
+/*
+    this functions escapes a string
+    to make it possible to use as
+    a string in a json string
+*/
+void rlsl_str_print_json_string(FILE* fd, const char* str);
 
 int32_t _rlsl_str_starts_with_any_of(const char* src, const char** substrings, int32_t substring_count);

@@ -5,7 +5,7 @@
 typedef struct rlsl_cursor_t {
     size_t line;
     size_t column;
-    size_t index;
+    size_t offset;
 } rlsl_cursor_t;
 
 rlsl_cursor_t rlsl_cursor_create();

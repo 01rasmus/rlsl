@@ -97,14 +97,39 @@ const char* rlsl_error_string(rlsl_error_enum_t error_code) {
     return message;
 }
 
-void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier) {
+const char* rlsl_error_severity_string(uint8_t severity) {
+    switch(severity) {
+        case RLSL_SEVERITY_WARNING:
+            return "warning";
+        case RLSL_SEVERITY_ERROR:
+            return "error";
+        case RLSL_SEVERITY_INFO:
+            return "info";
+        default:
+            return "unknown";
+    }
+}
+
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type) {
+    switch(type) {
+        case RLSL_ERROR_OUTPUT_TYPE_JSON:
+            _rlsl_error_print_json(error, source, identifier);
+            break;
+        case RLSL_ERROR_OUTPUT_TYPE_NORMAL:
+        default:
+            _rlsl_error_print_normal(error, source, identifier);
+            break;
+    }
+}
+
+void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier) {
 
     printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message_is_static ? error->message : error->dynamic_message, error->code);
     printf(PRINTF_COL_RESET "\t");
 
     const int64_t offset = 10;
 
-    int64_t start = (int64_t)error->start.index;
+    int64_t start = (int64_t)error->start.offset;
     for(int64_t i = 0; i < offset; i++) {
         if(source[start - 1] == '\n') {
             break;
@@ -115,7 +140,7 @@ void rlsl_error_print(rlsl_error_t* error, const char* source, const char* ident
         start = 0;
     }
 
-    for(int64_t i = start; i < (error->end.index + offset); i++) {
+    for(int64_t i = start; i < (error->end.offset + offset); i++) {
         char c = source[i];
         if(c == '\n' || c == '\0') {
             break;
@@ -124,18 +149,32 @@ void rlsl_error_print(rlsl_error_t* error, const char* source, const char* ident
     }
     printf("\n\t" PRINTF_COL_BOLD PRINTF_COL_GREEN);
 
-    for(int64_t i = start; i < (error->end.index + offset); i++) {
+    for(int64_t i = start; i < (error->end.offset + offset); i++) {
         char c = source[i];
         if(i == start && c == '\n') {
             continue;
         }
-        if(i >= error->start.index && i < error->end.index) {
+        if(i >= error->start.offset && i < error->end.offset) {
             printf("^");
         } else {
             printf(c == '\t' ? "\t" : " ");
         }
     }
     printf(PRINTF_COL_RESET "\n");
+}
+
+void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier) {
+    printf("{");
+    printf("\"code\": %d, \"message\": \"", error->code);
+    rlsl_str_print_json_string(stdout, error->message_is_static ? error->message : error->dynamic_message);
+    printf("\", \"severity_code\": %d, \"severity_string\": \"%s\", \"file\": \"", error->severity, rlsl_error_severity_string(error->severity));
+    rlsl_str_print_json_string(stdout, identifier);
+    printf("\",");
+    printf("\"range\": {");
+    printf("\"start\": {\"column\": %d, \"line\": %d, \"offset\": %d},", error->start.column, error->start.line, error->start.offset);
+    printf("\"end\": {\"column\": %d, \"line\": %d, \"offset\": %d}", error->end.column, error->end.line, error->end.offset);
+    printf("}");
+    printf("}\n");
 }
 
 void rlsl_error_free(rlsl_error_t* error) {

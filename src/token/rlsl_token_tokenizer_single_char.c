@@ -36,7 +36,7 @@ bool rlsl_token_tokenizer_parse_single_char_token(rlsl_cursor_t* cursor, rlsl_to
         rlsl_token_str_to_type_t* stt = &rlsl_token_single_char_tokens[i];
         size_t token_string_length = strlen(stt->string);
 
-        if(strncmp(stt->string, source + cursor_current.index, strlen(stt->string)) == 0) {
+        if(strncmp(stt->string, source + cursor_current.offset, strlen(stt->string)) == 0) {
             if(rlsl_cursor_advance(&cursor_current, source, token_string_length) != token_string_length) {
                 break;
             }

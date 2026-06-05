@@ -39,6 +39,11 @@ typedef enum rlsl_error_enum_t {
     #undef X
 } rlsl_error_enum_t;
 
+typedef enum rlsl_error_output_type_t {
+    RLSL_ERROR_OUTPUT_TYPE_NORMAL,
+    RLSL_ERROR_OUTPUT_TYPE_JSON,
+} rlsl_error_output_type_t;
+
 typedef enum rlsl_token_type_t rlsl_token_type_t;
 
 typedef struct rlsl_error_t {
@@ -55,5 +60,9 @@ rlsl_error_t rlsl_error_create_from_expected_tokens(rlsl_cursor_t start, rlsl_cu
 rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t start, rlsl_cursor_t end, const char* format, ...);
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code);
 const char* rlsl_error_string(rlsl_error_enum_t error_code);
-void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier);
+const char* rlsl_error_severity_string(uint8_t severity);
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type);
 void rlsl_error_free(rlsl_error_t* error);
+
+void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier);
+void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier);

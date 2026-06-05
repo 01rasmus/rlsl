@@ -44,8 +44,8 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
     rlsl_cursor_t cursor_current = (*cursor);
 
     //we should first check if the character at the start even is valid as a number/identifier
-    const char first_char = source[cursor->index];
-    const char second_char = source[cursor->index + 1];
+    const char first_char = source[cursor->offset];
+    const char second_char = source[cursor->offset + 1];
     bool valid_first_char = isalnum((uint8_t)first_char) || first_char == '_' || (first_char == '.' && isdigit((uint8_t)second_char));
     if(!valid_first_char) {
         return false;
@@ -63,16 +63,16 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
     bool has_letter = false;
 
     //check if it starts with one of the integer suffixes
-    int32_t suffix_index = rlsl_str_starts_with_any_of(source + cursor_current.index, integer_prefixes);
+    int32_t suffix_index = rlsl_str_starts_with_any_of(source + cursor_current.offset, integer_prefixes);
     if(suffix_index != -1) {
         const char* str = integer_prefixes[suffix_index];
         uint64_t flag = integer_prefix_flags[suffix_index];
         rlsl_str_cat(result, TOKEN_LITERAL_RESULT_SIZE, str);
         starts_with |= flag;
         result_size = rlsl_cursor_advance(&cursor_current, source, strlen(str));
-    } else if(isdigit((uint8_t)source[cursor_current.index])) {
+    } else if(isdigit((uint8_t)source[cursor_current.offset])) {
         starts_with |= TOKEN_LITERAL_FLAG_DECIMAL;
-    } else if(isalpha((uint8_t)source[cursor_current.index])) {
+    } else if(isalpha((uint8_t)source[cursor_current.offset])) {
         starts_with |= TOKEN_LITERAL_FLAG_LETTER;
     } else if(first_char == '.' && isdigit((uint8_t)second_char)) {
         char str[3] = {
@@ -99,28 +99,28 @@ bool rlsl_token_tokenizer_parse_literal_and_keyword(rlsl_cursor_t* cursor, rlsl_
             result_size++;
         }
 
-        const char current_char = source[cursor_current.index];
+        const char current_char = source[cursor_current.offset];
         const bool is_identifier = (contains_flags & TOKEN_LITERAL_FLAG_LETTER) == TOKEN_LITERAL_FLAG_LETTER;
         const bool should_continue = isalnum((uint8_t)current_char) || current_char == '_' || (current_char == '.' && !is_identifier);
         if(!should_continue) {
             break;
         }
 
-        int32_t hex_index = rlsl_str_starts_with_any_of(source + cursor_current.index, hex_substrings);
+        int32_t hex_index = rlsl_str_starts_with_any_of(source + cursor_current.offset, hex_substrings);
         if(hex_index != -1) {
             str = hex_substrings[hex_index];
             contains_flags |= TOKEN_LITERAL_FLAG_HEX;
             continue;
         }
 
-        int32_t dec_index = rlsl_str_starts_with_any_of(source + cursor_current.index, dec_substrings);
+        int32_t dec_index = rlsl_str_starts_with_any_of(source + cursor_current.offset, dec_substrings);
         if(dec_index != -1) {
             str = dec_substrings[dec_index];
             contains_flags |= TOKEN_LITERAL_FLAG_DECIMAL;
             continue;
         }
 
-        int32_t bin_index = rlsl_str_starts_with_any_of(source + cursor_current.index, bin_substrings);
+        int32_t bin_index = rlsl_str_starts_with_any_of(source + cursor_current.offset, bin_substrings);
         if(bin_index != -1) {
             str = bin_substrings[bin_index];
             contains_flags |= TOKEN_LITERAL_FLAG_BINARY;

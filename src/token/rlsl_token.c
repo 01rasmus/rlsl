@@ -62,7 +62,7 @@ rlsl_tokenizer_result_t* rlsl_token_tokenize_string(const char* source, const ch
             cursor = next_cur;
         }
 
-        if(source_length <= cursor.index || source[cursor.index] == '\0') {
+        if(source_length <= cursor.offset || source[cursor.offset] == '\0') {
             break;
         }
     }
