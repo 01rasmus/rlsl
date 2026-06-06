@@ -14,6 +14,28 @@
 #define PRINTF_COL_CYAN             "\x1B[36m"
 #define PRINTF_COL_WHITE            "\x1B[37m"
 
+#define RLSL_STR_STREAM_STDOUT      0x0
+#define RLSL_STR_STREAM_MEMORY      0x1
+
+typedef struct rlsl_str_stream_t {
+    char* string;
+    int64_t capacity;
+    int64_t length;
+    uint8_t type;
+} rlsl_str_stream_t;
+
+rlsl_str_stream_t rlsl_str_stream_create(uint8_t stream_type);
+void rlsl_str_stream_printf(rlsl_str_stream_t* sstr, const char* format, ...);
+void rlsl_str_stream_print_json_string(rlsl_str_stream_t* sstr, const char* string);
+int64_t rlsl_str_stream_length(rlsl_str_stream_t* sstr);
+
+/*
+    make sure not to free this and the stream.
+    only free this one or the stream
+*/
+char* rlsl_str_stream_raw(rlsl_str_stream_t* sstr);
+void rlsl_str_stream_free(rlsl_str_stream_t* sstr);
+
 /*
     int32_t str_starts_with_any(const char* src, const char** substrings)
 

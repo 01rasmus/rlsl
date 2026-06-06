@@ -61,8 +61,13 @@ rlsl_error_t _rlsl_error_createf(rlsl_error_enum_t error_code, rlsl_cursor_t sta
 uint8_t rlsl_error_severity(rlsl_error_enum_t error_code);
 const char* rlsl_error_string(rlsl_error_enum_t error_code);
 const char* rlsl_error_severity_string(uint8_t severity);
-void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type);
+
+/*
+    if out is null then it will be printed
+    to stdout
+*/
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type, char** out);
 void rlsl_error_free(rlsl_error_t* error);
 
-void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier);
-void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier);
+void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier, char** out);
+void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier, char** out);

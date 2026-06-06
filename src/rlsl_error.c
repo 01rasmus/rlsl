@@ -110,22 +110,23 @@ const char* rlsl_error_severity_string(uint8_t severity) {
     }
 }
 
-void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type) {
+void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type, char** out) {
     switch(type) {
         case RLSL_ERROR_OUTPUT_TYPE_JSON:
-            _rlsl_error_print_json(error, source, identifier);
+            _rlsl_error_print_json(error, source, identifier, out);
             break;
         case RLSL_ERROR_OUTPUT_TYPE_NORMAL:
         default:
-            _rlsl_error_print_normal(error, source, identifier);
+            _rlsl_error_print_normal(error, source, identifier, out);
             break;
     }
 }
 
-void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier) {
+void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier, char** out) {
+    rlsl_str_stream_t stream = rlsl_str_stream_create(out ? RLSL_STR_STREAM_MEMORY : RLSL_STR_STREAM_STDOUT);
 
-    printf(PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message_is_static ? error->message : error->dynamic_message, error->code);
-    printf(PRINTF_COL_RESET "\t");
+    rlsl_str_stream_printf(&stream, PRINTF_COL_BOLD "%s:%zu:%zu: " PRINTF_COL_RED "error" PRINTF_COL_RESET PRINTF_COL_BOLD ": %s " PRINTF_COL_RESET "(0x%05x)\n", identifier, error->start.line, error->start.column, error->message_is_static ? error->message : error->dynamic_message, error->code);
+    rlsl_str_stream_printf(&stream, PRINTF_COL_RESET "\t");
 
     const int64_t offset = 10;
 
@@ -145,9 +146,9 @@ void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const cha
         if(c == '\n' || c == '\0') {
             break;
         }
-        printf("%c", c);
+        rlsl_str_stream_printf(&stream, "%c", c);
     }
-    printf("\n\t" PRINTF_COL_BOLD PRINTF_COL_GREEN);
+    rlsl_str_stream_printf(&stream, "\n\t" PRINTF_COL_BOLD PRINTF_COL_GREEN);
 
     for(int64_t i = start; i < (error->end.offset + offset); i++) {
         char c = source[i];
@@ -155,26 +156,36 @@ void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const cha
             continue;
         }
         if(i >= error->start.offset && i < error->end.offset) {
-            printf("^");
+            rlsl_str_stream_printf(&stream, "^");
         } else {
-            printf(c == '\t' ? "\t" : " ");
+            rlsl_str_stream_printf(&stream, c == '\t' ? "\t" : " ");
         }
     }
-    printf(PRINTF_COL_RESET "\n");
+    rlsl_str_stream_printf(&stream, PRINTF_COL_RESET "\n");
+
+    if(out) {
+        (*out) = rlsl_str_stream_raw(&stream);
+    }
 }
 
-void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier) {
-    printf("{");
-    printf("\"code\": %d, \"message\": \"", error->code);
-    rlsl_str_print_json_string(stdout, error->message_is_static ? error->message : error->dynamic_message);
-    printf("\", \"severity_code\": %d, \"severity_string\": \"%s\", \"file\": \"", error->severity, rlsl_error_severity_string(error->severity));
-    rlsl_str_print_json_string(stdout, identifier);
-    printf("\",");
-    printf("\"range\": {");
-    printf("\"start\": {\"column\": %d, \"line\": %d, \"offset\": %d},", error->start.column, error->start.line, error->start.offset);
-    printf("\"end\": {\"column\": %d, \"line\": %d, \"offset\": %d}", error->end.column, error->end.line, error->end.offset);
-    printf("}");
-    printf("}\n");
+void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier, char** out) {
+    rlsl_str_stream_t stream = rlsl_str_stream_create(out ? RLSL_STR_STREAM_MEMORY : RLSL_STR_STREAM_STDOUT);
+
+    rlsl_str_stream_printf(&stream, "{");
+    rlsl_str_stream_printf(&stream, "\"code\": %d, \"message\": \"", error->code);
+    rlsl_str_stream_print_json_string(&stream, error->message_is_static ? error->message : error->dynamic_message);
+    rlsl_str_stream_printf(&stream, "\", \"severity_code\": %d, \"severity_string\": \"%s\", \"file\": \"", error->severity, rlsl_error_severity_string(error->severity));
+    rlsl_str_stream_print_json_string(&stream, identifier);
+    rlsl_str_stream_printf(&stream, "\",");
+    rlsl_str_stream_printf(&stream, "\"range\": {");
+    rlsl_str_stream_printf(&stream, "\"start\": {\"column\": %d, \"line\": %d, \"offset\": %d},", error->start.column, error->start.line, error->start.offset);
+    rlsl_str_stream_printf(&stream, "\"end\": {\"column\": %d, \"line\": %d, \"offset\": %d}", error->end.column, error->end.line, error->end.offset);
+    rlsl_str_stream_printf(&stream, "}");
+    rlsl_str_stream_printf(&stream, "}\n");
+
+    if(out) {
+        (*out) = rlsl_str_stream_raw(&stream);
+    }
 }
 
 void rlsl_error_free(rlsl_error_t* error) {
