@@ -188,6 +188,36 @@ void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char*
     }
 }
 
+bool rlsl_error_equal(const rlsl_error_t* a, const rlsl_error_t* b) {
+    if(a->code != b->code) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->start, &b->start) != 0) {
+        return false;
+    }
+    if(rlsl_cursor_compare(&a->end, &b->end) != 0) {
+        return false;
+    }
+    if(a->message_is_static != b->message_is_static) {
+        return false;
+    }
+    if(a->message == NULL && b->message != NULL) {
+        return false;
+    }
+    if(b->message == NULL && a->message != NULL) {
+        return false;
+    }
+    if(a->message && b->message) {
+        if(strcmp(a->message, b->message) != 0) {
+            return false;
+        }
+    }
+    if(a->severity != b->severity) {
+        return false;
+    }
+    return true;
+}
+
 void rlsl_error_free(rlsl_error_t* error) {
     if(!error) {
         return;

@@ -8,7 +8,9 @@
 #include "tests_token_numbers.h"
 #include "tests_token_identifier.h"
 #include "tests_token_comments.h"
+#include "tests_ast_recovery.h"
 #include "tests_ast_struct.h"
+#include "tests_ast_errors.h"
 
 #define TEST_REGISTRATION(TEST) { .name = #TEST, .function = TEST }
 
@@ -110,6 +112,12 @@ test_registration_t tests[] = {
     TEST_REGISTRATION(test_ast_struct_float_lowp),
     TEST_REGISTRATION(test_ast_struct_float_mediump),
     TEST_REGISTRATION(test_ast_struct_float_highp),
+
+    TEST_REGISTRATION(test_ast_errors_end_of_stream_okay_at_top_level),
+    TEST_REGISTRATION(test_ast_errors_multiple_top_level_invalid_tokens),
+    
+    TEST_REGISTRATION(tests_ast_recovery_invalid_var_declaration_in_multiple_structs),
+    TEST_REGISTRATION(test_ast_recovery_ensure_valid_vars_stay_even_with_invalid_var_declarations),
 };
 
 int32_t main() {

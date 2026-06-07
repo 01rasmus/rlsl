@@ -32,7 +32,7 @@ bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_membe
     out_member->end = end_token->cursor_end;
     return true;
 err:
-    rlsl_token_stream_recover_var_declaration(ts, true);
+    rlsl_token_stream_recover_var_declaration(ts);
     rlsl_ast_member_free(out_member);
     return false;
 }
@@ -60,7 +60,6 @@ bool rlsl_ast_member_array_count_parse(rlsl_token_stream_t* ts, uint64_t* out_co
     (*out_comp_count) = comp_count;
     return true;
 err:
-    rlsl_token_stream_recover_var_declaration(ts, false);
     return false;
 }
 

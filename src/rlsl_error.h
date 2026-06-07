@@ -69,5 +69,7 @@ const char* rlsl_error_severity_string(uint8_t severity);
 void rlsl_error_print(rlsl_error_t* error, const char* source, const char* identifier, rlsl_error_output_type_t type, char** out);
 void rlsl_error_free(rlsl_error_t* error);
 
+bool rlsl_error_equal(const rlsl_error_t* a, const rlsl_error_t* b);
+
 void _rlsl_error_print_normal(rlsl_error_t* error, const char* source, const char* identifier, char** out);
 void _rlsl_error_print_json(rlsl_error_t* error, const char* source, const char* identifier, char** out);

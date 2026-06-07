@@ -33,15 +33,15 @@ void rlsl_ast_module_free(rlsl_ast_module_t* m);
 /*
     helper functions that create errors on failure
 */
-#define rlsl_ast_token_expect_any_of(TS, EXPECTED_TOKENS, M) \
-    _rlsl_ast_token_expect_any_of(TS, EXPECTED_TOKENS, sizeof(EXPECTED_TOKENS) / sizeof(EXPECTED_TOKENS[0]), M)
-#define rlsl_ast_token_ensure_any_of(TOK, EXPECTED_TOKENS, M) \
-    _rlsl_ast_token_ensure_any_of(TOK, sizeof(EXPECTED_TOKENS) / sizeof(EXPECTED_TOKENS[0]), M)
+#define rlsl_ast_token_expect_any_of(TS, EXPECTED_TOKENS, M, ERR_ON_END) \
+    _rlsl_ast_token_expect_any_of(TS, EXPECTED_TOKENS, sizeof(EXPECTED_TOKENS) / sizeof(EXPECTED_TOKENS[0]), M, ERR_ON_END)
+#define rlsl_ast_token_ensure_any_of(TOK, EXPECTED_TOKENS, M, ERR_ON_END) \
+    _rlsl_ast_token_ensure_any_of(TOK, sizeof(EXPECTED_TOKENS) / sizeof(EXPECTED_TOKENS[0]), M, ERR_ON_END)
 
 rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
 bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token, rlsl_ast_module_t* m);
-rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
-bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m);
+rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m, bool error_on_end_of_stream);
+bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m, bool error_on_end_of_stream);
 
 /*
     helper functions that does not create errors

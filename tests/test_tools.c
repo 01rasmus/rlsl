@@ -78,19 +78,62 @@ fail:
     return false;
 }
 
-bool expect_ast(const char* source, const rlsl_ast_module_t* expected_module) {
-    rlsl_tokenizer_result_t* res = rlsl_token_tokenize_string(source, NULL);
-    if(res->error_count > 0) {
-        return false;
+bool ast_get(const char* source, rlsl_ast_module_t* out) {
+    rlsl_tokenizer_result_t* res = NULL;
+    if(!out) {
+        goto err;
     }
-    
-    rlsl_ast_module_t ast = rlsl_ast_parse_tokens(res->tokens, res->token_count);
+    memset(out, 0, sizeof(rlsl_ast_module_t));
+
+    res = rlsl_token_tokenize_string(source, NULL);
+    if(res->error_count > 0) {
+        goto err;
+    }
+
+    (*out) = rlsl_ast_parse_tokens(res->tokens, res->token_count);
+    return true;
+err:
+    rlsl_ast_module_free(out);
+    memset(out, 0, sizeof(rlsl_ast_module_t));
+    return false;
+}
+
+bool expect_ast(const char* source, const rlsl_ast_module_t* expected_module) {
+    rlsl_ast_module_t ast = {0};
+    if(!ast_get(source, &ast)) {
+        goto no;
+    }
+
     if(ast.error_count > 0) {
-        return false;
+        goto no;
     }
 
     bool are_equal = rlsl_ast_module_equal(&ast, expected_module);
-    rlsl_tokenizer_result_free(res);
     rlsl_ast_module_free(&ast);
     return are_equal;
+no:
+    rlsl_ast_module_free(&ast);
+    return false;
+}
+
+bool _expect_ast_errors(const char* source, const rlsl_error_t* expected_errors, size_t expected_error_count) {
+    rlsl_ast_module_t ast;
+    if(!ast_get(source, &ast)) {
+        goto no;
+    }
+    if(ast.error_count != expected_error_count) {
+        goto no;
+    }
+
+    for(size_t i = 0; i < expected_error_count; i++) {
+        if(!rlsl_error_equal(&ast.errors[i], &expected_errors[i])) {
+            goto no;
+        }
+    }
+
+    rlsl_ast_module_free(&ast);
+    return true;
+no:
+    rlsl_ast_module_free(&ast);
+    return false;
 }

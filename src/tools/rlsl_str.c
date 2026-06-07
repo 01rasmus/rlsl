@@ -63,6 +63,9 @@ end:
 }
 
 void rlsl_str_stream_print_json_string(rlsl_str_stream_t* sstr, const char* str) {
+    if(!str) {
+        return;
+    }
     for(; *str; str++) {
         switch(*str) {
             case '"': {

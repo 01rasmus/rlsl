@@ -6,6 +6,8 @@ rlsl_token_stream_t rlsl_token_stream_create(rlsl_token_t* borrowed_tokens, size
         .position = 0,
         .token_count = token_count,
         .tokens = borrowed_tokens,
+        .curly_bracket_depth = 0,
+        .parenthesis_depth = 0,
     };
 }
 
@@ -43,21 +45,46 @@ rlsl_token_t* rlsl_token_stream_advance(rlsl_token_stream_t* ts) {
         }
         rlsl_token_t* token = &ts->tokens[ts->position];
         ts->position++;
-        
-        bool is_skippable_token = token->type == RLSL_TOKEN_SYMBOL_SPACE || token->type == RLSL_TOKEN_SYMBOL_COMMENT;
+
+        bool is_skippable_token = false;
+        switch(token->type) {
+            case RLSL_TOKEN_SYMBOL_CURLY_BRACKET_OPENED:
+                ts->curly_bracket_depth++;
+                break;
+            case RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED:
+                ts->curly_bracket_depth--;
+                break;
+            case RLSL_TOKEN_SYMBOL_PARENTHESIS_OPENED:
+                ts->parenthesis_depth++;
+                break;
+            case RLSL_TOKEN_SYMBOL_PARENTHESIS_CLOSED:
+                ts->parenthesis_depth--;
+                break;
+            case RLSL_TOKEN_SYMBOL_SPACE:
+            case RLSL_TOKEN_SYMBOL_COMMENT:
+                is_skippable_token = true;
+                break;
+            default:
+                break;
+        }
         if(!is_skippable_token) {
             return token;
         }
     }
 }
 
-void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts, bool consume_token) {
+void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts) {
     while(true) {
         rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
-        if(!token || token->type == RLSL_TOKEN_SYMBOL_SEMICOLON || token->type == RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED) {
-            if(consume_token) {
-                rlsl_token_stream_advance(ts);
-            }
+        if(!token) {
+            return;
+        }
+        if(token->type == RLSL_TOKEN_SYMBOL_SEMICOLON) {
+            rlsl_token_stream_advance(ts);
+            return;
+        }
+
+        if(token->type == RLSL_TOKEN_SYMBOL_CURLY_BRACKET_CLOSED) {
             return;
         }
         rlsl_token_stream_advance(ts);
@@ -65,6 +92,7 @@ void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts, bool con
 }
 
 void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts) {
+    bool begin_at_zero = ts->curly_bracket_depth == 0;
     while(true) {
         rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
         if(!token) {
@@ -76,6 +104,20 @@ void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts) {
             if(token->type == top_level_tokens[i]) {
                 return;
             }
+        }
+
+        if(ts->curly_bracket_depth == 0 && token->type == RLSL_TOKEN_SYMBOL_SEMICOLON) {
+            rlsl_token_stream_advance(ts);
+            return;
+        }
+
+        if(!begin_at_zero && ts->curly_bracket_depth == 0) {
+            rlsl_token_stream_advance(ts);
+            return;
+        }
+
+        if(ts->curly_bracket_depth > 0) {
+            begin_at_zero = false;
         }
 
         rlsl_token_stream_advance(ts);

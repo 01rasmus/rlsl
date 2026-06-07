@@ -9,6 +9,8 @@ typedef struct rlsl_token_stream_t {
     size_t token_count;
     rlsl_token_t* tokens;
     int64_t position;
+    int64_t curly_bracket_depth;
+    int64_t parenthesis_depth;
 } rlsl_token_stream_t;
 
 rlsl_token_stream_t rlsl_token_stream_create(rlsl_token_t* borrowed_tokens, size_t token_count);
@@ -28,5 +30,5 @@ rlsl_token_t* rlsl_token_stream_peek(rlsl_token_stream_t* ts, int64_t offset);
 */
 rlsl_token_t* rlsl_token_stream_advance(rlsl_token_stream_t* ts);
 
-void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts, bool consume_token);
+void rlsl_token_stream_recover_var_declaration(rlsl_token_stream_t* ts);
 void rlsl_token_stream_recover_top_level(rlsl_token_stream_t* ts);

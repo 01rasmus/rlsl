@@ -16,7 +16,7 @@ bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rls
         RLSL_TOKEN_LITERAL_IDENTIFIER,
     };
 
-    rlsl_token_t* token = rlsl_ast_token_expect_any_of(ts, first_expected_tokens, m);
+    rlsl_token_t* token = rlsl_ast_token_expect_any_of(ts, first_expected_tokens, m, true);
     if(!token) {
         goto err;
     }
@@ -37,7 +37,7 @@ bool rlsl_ast_type_parse(rlsl_token_stream_t* ts, rlsl_ast_type_t* out_type, rls
         };
 
         //we can reuse the same token
-        token = rlsl_ast_token_expect_any_of(ts, after_const_expected_tokens, m);
+        token = rlsl_ast_token_expect_any_of(ts, after_const_expected_tokens, m, true);
         if(!token) {
             goto err;
         }
