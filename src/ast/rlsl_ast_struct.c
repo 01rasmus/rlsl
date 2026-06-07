@@ -9,8 +9,8 @@
 bool rlsl_ast_struct_parse(rlsl_token_stream_t* ts, rlsl_ast_struct_t* out_struct, rlsl_ast_module_t* m) {
     memset(out_struct, 0, sizeof(rlsl_ast_struct_t));
 
-    rlsl_token_t* struct_name = rlsl_token_stream_advance(ts);
-    if(!rlsl_ast_token_ensure(struct_name, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
+    rlsl_token_t* struct_name = rlsl_ast_token_expect(ts, RLSL_TOKEN_LITERAL_IDENTIFIER, m);
+    if(!struct_name) {
         goto err;
     }
     out_struct->name = rlsl_str_cpy(struct_name->value.identifier);

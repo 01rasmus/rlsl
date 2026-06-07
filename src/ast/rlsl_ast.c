@@ -114,7 +114,7 @@ void rlsl_ast_module_free(rlsl_ast_module_t* m) {
 */
 
 rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t expected_token, rlsl_ast_module_t* m) {
-    rlsl_token_t* token = rlsl_token_stream_advance(ts);
+    rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
     if(!token) {
         rlsl_vec_push(m->errors, rlsl_error_create(RLSL_ERROR_END_OF_TOKEN_STREAM, &m->last_cursor_start, &m->last_cursor_end));
         return NULL;
@@ -135,35 +135,12 @@ rlsl_token_t* rlsl_ast_token_expect(rlsl_token_stream_t* ts, rlsl_token_type_t e
     //success
     m->last_cursor_start = token->cursor_start;
     m->last_cursor_end = token->cursor_end;
+    rlsl_token_stream_advance(ts);
     return token;
 }
 
-bool rlsl_ast_token_ensure(rlsl_token_t* token, rlsl_token_type_t expected_token, rlsl_ast_module_t* m) {
-    if(!token) {
-        rlsl_vec_push(m->errors, rlsl_error_create(RLSL_ERROR_END_OF_TOKEN_STREAM, &m->last_cursor_start, &m->last_cursor_end));
-        return false;
-    }
-    if(token->type != expected_token) {
-        rlsl_error_t error = rlsl_error_createf(
-            RLSL_ERROR_EXPECTED_TOKEN,
-            token->cursor_start,
-            token->cursor_end,
-            "expected token \"%s\" but got \"%s\"",
-            rlsl_token_type_to_string(expected_token),
-            rlsl_token_type_to_string(token->type)
-        );
-        rlsl_vec_push(m->errors, error);
-        return false;
-    }
-
-    //success
-    m->last_cursor_start = token->cursor_start;
-    m->last_cursor_end = token->cursor_end;
-    return true;
-}
-
 rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m, bool error_on_end_of_stream) {
-    rlsl_token_t* token = rlsl_token_stream_advance(ts);
+    rlsl_token_t* token = rlsl_token_stream_peek(ts, 1);
     if(!token) {
         if(error_on_end_of_stream) {
             rlsl_vec_push(m->errors, rlsl_error_create(RLSL_ERROR_END_OF_TOKEN_STREAM, &m->last_cursor_start, &m->last_cursor_end));
@@ -183,44 +160,13 @@ rlsl_token_t* _rlsl_ast_token_expect_any_of(rlsl_token_stream_t* ts, const rlsl_
     if(found) {
         m->last_cursor_start = token->cursor_start;
         m->last_cursor_end = token->cursor_end;
+        rlsl_token_stream_advance(ts);
         return token;
     }
 
     rlsl_error_t error = rlsl_error_create_from_expected_tokens(token->cursor_start, token->cursor_end, token->type, expected_tokens, expected_token_count);
     rlsl_vec_push(m->errors, error);
     return NULL;
-}
-
-bool _rlsl_ast_token_ensure_any_of(rlsl_token_t* token, const rlsl_token_type_t* expected_tokens, int64_t expected_token_count, rlsl_ast_module_t* m, bool error_on_end_of_stream) {
-    if(expected_token_count == 1) {
-        return rlsl_ast_token_ensure(token, expected_tokens[0], m);
-    }
-
-    if(!token) {
-        if(error_on_end_of_stream) {
-            rlsl_vec_push(m->errors, rlsl_error_create(RLSL_ERROR_END_OF_TOKEN_STREAM, &m->last_cursor_start, &m->last_cursor_end));
-        }
-        return false;
-    }
-
-    bool found = false;
-    for(int64_t i = 0; i < expected_token_count; i++) {
-        rlsl_token_type_t type = expected_tokens[i];
-        if(type == token->type) {
-            found = true;
-            break;
-        }
-    }
-
-    if(found) {
-        m->last_cursor_start = token->cursor_start;
-        m->last_cursor_end = token->cursor_end;
-        return true;
-    }
-
-    rlsl_error_t error = rlsl_error_create_from_expected_tokens(token->cursor_start, token->cursor_end, token->type, expected_tokens, expected_token_count);
-    rlsl_vec_push(m->errors, error);
-    return false;
 }
 
 /*

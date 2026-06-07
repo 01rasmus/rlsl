@@ -13,8 +13,8 @@ bool rlsl_ast_member_parse(rlsl_token_stream_t* ts, rlsl_ast_member_t* out_membe
         goto err;
     }
 
-    rlsl_token_t* name_token = rlsl_token_stream_advance(ts);
-    if(!rlsl_ast_token_ensure(name_token, RLSL_TOKEN_LITERAL_IDENTIFIER, m)) {
+    rlsl_token_t* name_token = rlsl_ast_token_expect(ts, RLSL_TOKEN_LITERAL_IDENTIFIER, m);
+    if(!name_token) {
         goto err;
     }
     uint64_t comp_count;
