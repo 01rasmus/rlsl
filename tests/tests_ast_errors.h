@@ -5,8 +5,7 @@
 
 bool test_ast_errors_end_of_stream_okay_at_top_level() {
     const char* source = "input(0) vec3 pos; \n\t ";
-    const rlsl_error_t errors[0] = {};
-    return expect_ast_errors(source, errors);
+    return _expect_ast_errors(source, NULL, 0);
 }
 
 bool test_ast_errors_multiple_top_level_invalid_tokens() {
